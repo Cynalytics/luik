@@ -1,9 +1,9 @@
 import json
 import logging.config
 
-import click
 import structlog
 
+import luik.api
 from luik.config import settings
 
 with settings.log_cfg.open() as f:
@@ -17,11 +17,7 @@ structlog.configure(
         structlog.dev.set_exc_info,
         structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.TimeStamper("iso", utc=False),
-        (
-            structlog.dev.ConsoleRenderer(colors=True, pad_level=False)
-            if settings.logging_format == "text"
-            else structlog.processors.JSONRenderer()
-        ),
+        structlog.dev.ConsoleRenderer(colors=True),
     ],
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
@@ -32,21 +28,11 @@ structlog.configure(
 logger = structlog.get_logger(__name__)
 
 
-@click.command()
-@click.option(
-    "--log-level",
-    type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"]),
-    help="Log level",
-    default="INFO",
-)
-def cli(log_level: str):
-    logger.setLevel(log_level)
-    logger.info("Starting runtime for")
-
-    import luik.api
-
+def main():
+    logger.info("Starting runtime for %s", __name__)
     luik.api.run()
+    logger.info("Ended runtime for %s", __name__)
 
 
 if __name__ == "__main__":
-    cli()
+    main()
