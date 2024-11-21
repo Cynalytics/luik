@@ -1,13 +1,10 @@
 import datetime
 import json
-import logging
 import uuid
-from base64 import b64encode
-from collections.abc import Set
 from enum import Enum
 from typing import Any
 
-from httpx import Client, HTTPTransport, Response
+from httpx import Client, HTTPTransport
 from pydantic import AwareDatetime, BaseModel, Field, TypeAdapter
 
 

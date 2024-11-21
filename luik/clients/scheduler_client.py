@@ -1,14 +1,11 @@
 import datetime
 import json
-import uuid
-from base64 import b64encode
-from collections.abc import Set
 from enum import Enum
 from typing import Any
 
-from httpx import Client, HTTPTransport, Response
-from pydantic import AwareDatetime, BaseModel, Field, TypeAdapter
 import structlog
+from httpx import Client, HTTPTransport
+from pydantic import AwareDatetime, BaseModel, Field, TypeAdapter
 
 logger = structlog.get_logger(__name__)
 
@@ -112,8 +109,7 @@ class SchedulerAPIClient(SchedulerClientInterface):
             f"/queues/{queue_id}/pop", data=QueuePopRequest(filters=filters).model_dump_json()
         )
 
-        # TODO: Currently openkat returns an error (404) when no task is found
-        # response.raise_for_status()
+        # TODO: Currently openkat returns an error (404) when no task is found. This needs better handling
 
         logger.info("Content of pop_task:\n%s", response.text)
         if response.is_error:

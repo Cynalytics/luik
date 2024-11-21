@@ -4,10 +4,9 @@ import uuid
 from enum import Enum
 from typing import Any
 
+from boefjes.job_models import BoefjeMeta, NormalizerMeta
 from httpx import Client, HTTPTransport, Response
 from pydantic import BaseModel, TypeAdapter
-
-from boefjes.job_models import BoefjeMeta, NormalizerMeta
 
 
 class Queue(BaseModel):

@@ -1,5 +1,4 @@
 import multiprocessing
-from datetime import datetime, timezone
 from multiprocessing.context import ForkContext, ForkProcess
 
 import structlog
@@ -10,17 +9,9 @@ from luik.clients.boefje_runner_client import BoefjeRunnerClient
 from luik.clients.bytes_client import BytesAPIClient
 from luik.clients.katalogus_client import KatalogusClient
 from luik.clients.octopoes_client import OctopoesClient
-from luik.clients.scheduler_client import SchedulerAPIClient, SchedulerClientInterface, TaskStatus
+from luik.clients.scheduler_client import SchedulerAPIClient, SchedulerClientInterface
 from luik.config import settings
-from luik.models.api_models import (
-    Arguments,
-    Boefje,
-    BoefjeMeta,
-    Input,
-    LuikBoefjeInputResponse,
-    LuikPopRequest,
-    LuikPopResponse,
-)
+from luik.models.api_models import LuikPopRequest, LuikPopResponse
 
 app = FastAPI(title="Boefje API")
 logger = structlog.get_logger(__name__)

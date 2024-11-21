@@ -1,16 +1,9 @@
-import json
-import uuid
-from base64 import b64encode
-from collections.abc import Set
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import datetime
 from typing import Any
 
 import structlog
-from httpx import Client, HTTPTransport, Response
-from pydantic import AwareDatetime, BaseModel, Field, TypeAdapter
-
-from luik.config import settings
+from httpx import Client, HTTPTransport
+from pydantic import TypeAdapter
 
 logger = structlog.get_logger(__name__)
 

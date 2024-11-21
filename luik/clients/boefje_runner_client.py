@@ -1,14 +1,8 @@
-import datetime
-import json
-import uuid
-from base64 import b64encode
-from collections.abc import Set
-from enum import Enum
 from typing import Any
 
-from httpx import Client, HTTPTransport, Response
-from pydantic import AwareDatetime, BaseModel, Field, TypeAdapter
 import structlog
+from httpx import Client, HTTPTransport
+from pydantic import TypeAdapter
 
 logger = structlog.get_logger(__name__)
 

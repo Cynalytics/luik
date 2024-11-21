@@ -4,11 +4,6 @@ from pathlib import Path
 from typing import Literal
 
 import structlog
-from fastapi import Query
-from jsonschema.exceptions import ValidationError
-from jsonschema.validators import validate
-from sqlalchemy.orm import Session
-
 from boefjes.local_repository import LocalPluginRepository, get_local_repository
 from boefjes.models import Boefje, FilterParameters, Normalizer, PaginationParameters, PluginType
 from boefjes.sql.config_storage import create_config_storage
@@ -23,6 +18,10 @@ from boefjes.storage.interfaces import (
     PluginStorage,
     SettingsNotConformingToSchema,
 )
+from fastapi import Query
+from jsonschema.exceptions import ValidationError
+from jsonschema.validators import validate
+from sqlalchemy.orm import Session
 
 logger = structlog.get_logger(__name__)
 

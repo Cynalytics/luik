@@ -1,4 +1,5 @@
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -42,7 +43,7 @@ class Input(BaseModel):
 
 class Arguments(BaseModel):
     oci_arguments: list[str]
-    input: dict[str, Any] # This contains an OOI # TODO: import octopoes here. Ask how debian packages install octopoes
+    input: dict[str, Any]  # This contains an OOI # TODO: import octopoes here. Ask how debian packages install octopoes
 
 
 class BoefjeMeta(BaseModel):
