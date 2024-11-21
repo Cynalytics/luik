@@ -8,10 +8,6 @@ from luik.config import settings
 logger = structlog.get_logger(__name__)
 
 
-def get_katalogus_client():
-    return KatalogusClient(str(settings.katalogus_db_uri))
-
-
 class KatalogusBoefje(BaseModel):
     plugin_id: str
     name: str
@@ -76,6 +72,7 @@ class KatalogusClient:
             )
 
     def get_boefje_settings(self, org_code: str, plugin_id: str) -> dict[str, Any] | None:
+        raise NotImplementedError()
         with self._engine.connect() as conn:
             metadata = MetaData()
             metadata.reflect(bind=self._engine)

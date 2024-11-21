@@ -6,9 +6,10 @@ import structlog
 from fastapi import Depends, FastAPI, HTTPException, status
 from uvicorn import Config, Server
 
+from luik.clients.boefje_runner_client import BoefjeRunnerClient
 from luik.clients.bytes_client import BytesAPIClient
-from luik.clients.katalogus_client import KatalogusClient, get_katalogus_client
-from luik.clients.octopoes_client import OctopoesClient, get_octopoes_client
+from luik.clients.katalogus_client import KatalogusClient
+from luik.clients.octopoes_client import OctopoesClient
 from luik.clients.scheduler_client import SchedulerAPIClient, SchedulerClientInterface, TaskStatus
 from luik.config import settings
 from luik.models.api_models import (
@@ -30,8 +31,20 @@ def get_scheduler_client():
     return SchedulerAPIClient(str(settings.scheduler_api))
 
 
+def get_katalogus_client():
+    return KatalogusClient(str(settings.katalogus_db_uri))
+
+
 def get_bytes_client():
     return BytesAPIClient(str(settings.scheduler_api))
+
+
+def get_octopoes_client():
+    return OctopoesClient(str(settings.octopoes_api))
+
+
+def get_boefje_runner_client():
+    return BoefjeRunnerClient(str(settings.boefje_runner_api))
 
 
 class UvicornServer(ForkProcess):
@@ -78,42 +91,11 @@ def pop_task(
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 
 
-@app.post("/boefje/input/{task_id}", response_model=LuikBoefjeInputResponse)
-def boefje_input(
-    task_id: str,
-    scheduler_client: SchedulerAPIClient = Depends(get_scheduler_client),
-    katalogus_client: KatalogusClient = Depends(get_katalogus_client),
-    octopoes_client: OctopoesClient = Depends(get_octopoes_client),
-):
-    task = scheduler_client.get_task(task_id)
-
-    if task.status is not TaskStatus.RUNNING:
-        raise HTTPException(status_code=403, detail="Task does not have status running")
-
-    plugin = katalogus_client.get_boefje_plugin(task.data.boefje["id"])
-    if plugin is None:
+@app.get("/boefje/input/{task_id}")  # response_model=LuikBoefjeInputResponse)
+def boefje_input(task_id: str, boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client)):
+    result = boefje_runner_client.boefje_input(task_id)
+    if result is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Requested plugin ({task.data.boefje['id']}) could not be found.",
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not get boefje input from task: {task_id}."
         )
-
-    plugin_settings = katalogus_client.get_boefje_settings(task.data.organization, task.data.boefje["id"])
-    if plugin_settings is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Plugin settings of ({task.data.boefje['id']}) could not be found.",
-        )
-    ooi = octopoes_client.get(task.data.organization, task.data.input_ooi, datetime.now(timezone.utc))
-    output_url = str(settings.api).rstrip("/") + f"/api/v0/tasks/{task_id}"
-    return LuikBoefjeInputResponse(
-        task_id=task_id,
-        output_url=output_url,
-        boefje_meta=BoefjeMeta(
-            id=task_id,
-            boefje=Boefje(id=task.data.boefje["id"]),
-            input_ooi=task.data.input_ooi,
-            arguments=Arguments(oci_arguments=plugin.oci_arguments, input=ooi),
-            organization=task.data.organization,
-            environment=plugin_settings,
-        ),
-    )
+    return result
