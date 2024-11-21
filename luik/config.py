@@ -90,22 +90,6 @@ class Settings(BaseSettings):
         validation_alias="BYTES_PASSWORD",
     )
 
-    boefje_reachable_networks: list[str] = (
-        Field(  #! Maybe not needed since we can make the kitten request these
-            ["Network|internet"],
-            description="List of networks the boefje-runner can reach",
-            examples=[["Network|internet", "Network|dentist"], []],
-        )
-    )
-
-    boefje_task_capabilities: list[str] = (
-        Field(  #! Maybe not needed since we can make the kitten request these
-            ["ipv6", "ipv4"],
-            description="List of technical requirements the boefje-runner is capable of running",
-            examples=[[], ["ipv4", "wifi-pineapple"]],
-        )
-    )
-
     logging_format: Literal["text", "json"] = Field(
         "text", description="Logging format"
     )

@@ -33,7 +33,7 @@ class TaskStatus(Enum):
 class BoefjeMeta(BaseModel):
     id: str
     boefje: dict[str, Any]
-    input_ooi: str | None = None
+    input_ooi: str
     arguments: dict = {}
     organization: str
     runnable_hash: str | None = None
