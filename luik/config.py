@@ -1,24 +1,9 @@
-import logging
 import os
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
-from pydantic import (
-    AmqpDsn,
-    AnyHttpUrl,
-    Field,
-    FilePath,
-    IPvAnyAddress,
-    PostgresDsn,
-    conint,
-)
-from pydantic_settings import (
-    BaseSettings,
-    PydanticBaseSettingsSource,
-    SettingsConfigDict,
-)
-from pydantic_settings.sources import EnvSettingsSource
-
+from pydantic import AmqpDsn, AnyHttpUrl, Field, FilePath, PostgresDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR: Path = Path(__file__).parent.resolve()
 
