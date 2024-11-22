@@ -53,6 +53,11 @@ def run():
     return instance
 
 
+@app.get("/health")
+def health():
+    return Response("OK", status_code=status.HTTP_200_OK)
+
+
 @app.post("/pop/{queue_id}", response_model=LuikPopResponse)
 def pop_task(
     queue_id: str,
@@ -93,15 +98,20 @@ def boefje_input(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not get boefje input from task: {task_id}."
         )
 
+    prepared_boefje_input["output_url"] = str(settings.api).rstrip("/") + f"/boefje/output/{task_id}"
+
     return prepared_boefje_input
 
 
-@app.post("/api/v0/tasks/{task_id}")
+@app.post("/boefje/output/{task_id}")
 def boefje_output(
     task_id: str,
     boefje_output: LuikBoefjeOutputRequest,
     boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client),
 ):
+    logger.info("Boefje output with:")
+    logger.info(task_id)
+    logger.info(boefje_output.model_dump_json())
     try:
         boefje_runner_client.boefje_output(task_id, boefje_output)
     except HTTPException as e:
