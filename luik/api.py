@@ -2,7 +2,7 @@ import multiprocessing
 from multiprocessing.context import ForkContext, ForkProcess
 
 import structlog
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Response, status
 from uvicorn import Config, Server
 
 from luik.clients.boefje_runner_client import BoefjeRunnerClient
@@ -11,7 +11,7 @@ from luik.clients.katalogus_client import KatalogusClient
 from luik.clients.octopoes_client import OctopoesClient
 from luik.clients.scheduler_client import SchedulerAPIClient, SchedulerClientInterface
 from luik.config import settings
-from luik.models.api_models import LuikPopRequest, LuikPopResponse
+from luik.models.api_models import LuikBoefjeOutputRequest, LuikPopRequest, LuikPopResponse
 
 app = FastAPI(title="Boefje API")
 logger = structlog.get_logger(__name__)
@@ -68,17 +68,19 @@ def pop_task(
     logger.info("Popping task for queue: %s", queue_id)
     logger.info("With request:\n%s", request.model_dump_json())
     task = scheduler_client.pop_task(queue_id, request.task_capabilities, request.reachable_networks)
-
     if task is None:
         logger.info("No task found for queue %s.", queue_id)
-        return None
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     logger.info("Task:\n%s", task.model_dump_json())
 
     plugin = katalogus_client.get_boefje_plugin(task.data.boefje["id"])
     if plugin is None:
-        logger.error("Task found, but boefje does not exist for task. %s.", queue_id)
-        return None
+        logger.critical("Task found, but boefje does not exist for task. %s.", queue_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Task found, but boefje does not exist for task. {queue_id}.",
+        )
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 
 
@@ -89,4 +91,25 @@ def boefje_input(task_id: str, boefje_runner_client: BoefjeRunnerClient = Depend
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not get boefje input from task: {task_id}."
         )
+
+    # TODO: patch task to become running
+
     return result
+
+
+@app.post("/api/v0/tasks/{task_id}")
+def boefje_output(
+    task_id: str,
+    boefje_output: LuikBoefjeOutputRequest,
+    boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client),
+):
+    
+    
+    
+    
+    try:
+        boefje_runner_client.boefje_output(task_id, boefje_output)
+    except HTTPException as e:
+        return HTTPException(status_code=e.status_code, detail=f"Calling the boefje output went wrong.\n{e.detail}")
+
+    return Response(status_code=status.HTTP_200_OK)

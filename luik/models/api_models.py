@@ -14,7 +14,7 @@ class LuikPopResponse(BaseModel):
 
 
 class File(BaseModel):
-    name: str
+    name: str | None = None
     content: str
     tags: list[str]
 
