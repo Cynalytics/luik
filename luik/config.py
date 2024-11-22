@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Literal
 
-from pydantic import AmqpDsn, AnyHttpUrl, Field, FilePath, PostgresDsn
+from pydantic import AnyHttpUrl, Field, FilePath, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR: Path = Path(__file__).parent.resolve()
@@ -19,9 +19,6 @@ class Settings(BaseSettings):
     pool_size: int = Field(2, description="Number of workers to run per queue")
     poll_interval: float = Field(10.0, description="Time to wait before polling for tasks when all queues are empty")
     worker_heartbeat: float = Field(1.0, description="Seconds to wait before checking the workers when queues are full")
-
-    # Queue configuration
-    queue_uri: AmqpDsn = Field(..., description="KAT queue URI", examples=["amqp://"], validation_alias="QUEUE_URI")
 
     katalogus_db_uri: PostgresDsn = Field(
         ...,
