@@ -6,10 +6,9 @@ from fastapi import Depends, FastAPI, HTTPException, Response, status
 from uvicorn import Config, Server
 
 from luik.clients.boefje_runner_client import BoefjeRunnerClient
-from luik.clients.bytes_client import BytesAPIClient
 from luik.clients.katalogus_client import KatalogusClient
 from luik.clients.octopoes_client import OctopoesClient
-from luik.clients.scheduler_client import SchedulerAPIClient, SchedulerClientInterface
+from luik.clients.scheduler_client import SchedulerAPIClient, SchedulerClientInterface, TaskStatus
 from luik.config import settings
 from luik.models.api_models import LuikBoefjeOutputRequest, LuikPopRequest, LuikPopResponse
 
@@ -24,10 +23,6 @@ def get_scheduler_client():
 
 def get_katalogus_client():
     return KatalogusClient(str(settings.katalogus_db_uri))
-
-
-def get_bytes_client():
-    return BytesAPIClient(str(settings.scheduler_api))
 
 
 def get_octopoes_client():
@@ -85,16 +80,20 @@ def pop_task(
 
 
 @app.get("/boefje/input/{task_id}")  # response_model=LuikBoefjeInputResponse)
-def boefje_input(task_id: str, boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client)):
-    result = boefje_runner_client.boefje_input(task_id)
-    if result is None:
+def boefje_input(
+    task_id: str,
+    scheduler_client: SchedulerAPIClient = Depends(get_scheduler_client),
+    boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client),
+):
+    scheduler_client.patch_task(task_id, TaskStatus.RUNNING)
+
+    prepared_boefje_input = boefje_runner_client.boefje_input(task_id)
+    if prepared_boefje_input is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not get boefje input from task: {task_id}."
         )
 
-    # TODO: patch task to become running
-
-    return result
+    return prepared_boefje_input
 
 
 @app.post("/api/v0/tasks/{task_id}")
@@ -103,10 +102,6 @@ def boefje_output(
     boefje_output: LuikBoefjeOutputRequest,
     boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client),
 ):
-    
-    
-    
-    
     try:
         boefje_runner_client.boefje_output(task_id, boefje_output)
     except HTTPException as e:
