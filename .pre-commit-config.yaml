@@ -6,27 +6,15 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=lf"]
       - id: detect-private-key
-        exclude: ^boefjes/boefjes/plugins/kat_cve_2023_34039/keys/
       - id: check-case-conflict
       - id: check-yaml
       - id: check-json
       - id: check-toml
       - id: debug-statements
-        exclude: |
-          (?x)(
-          ^boefjes/tools |
-          ^octopoes/tools
-          )
+
       - id: end-of-file-fixer
-        exclude: |
-          (?x)(
-          \.svcg$ |
-          ^boefjes/tests/examples/rdns-nxdomain.txt$ |
-          ^boefjes/tests/examples/raw/
-          )
+
       - id: fix-byte-order-marker
-      - id: pretty-format-json
-        args: ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.16
@@ -38,7 +26,6 @@ repos:
     rev: v6.2.1
     hooks:
       - id: rstcheck
-        # https://github.com/rstcheck/rstcheck-core/issues/4
         args:
           [
             "--ignore-messages",
@@ -57,8 +44,6 @@ repos:
     rev: v2.11
     hooks:
       - id: vulture
-        exclude: |
-          /tests/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.3.5"
@@ -92,18 +77,6 @@ repos:
           - types-python-dateutil
           - types-requests
           - types-croniter
-        exclude: |
-          (?x)(
-          ^boefjes/tools |
-          ^keiko/templates |
-          ^mula/whitelist\.py$ |
-          ^mula/scripts |
-          ^octopoes/tools |
-          ^rocky/whitelist\.py$ |
-          /tests/ |
-          docs/source/conf\.py$ |
-          setup\.py$
-          )
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
@@ -111,29 +84,6 @@ repos:
       - id: codespell
         additional_dependencies: ["tomli"]
         args: ["-L", "lama", "--ignore-regex", ".{1024}|.*codespell-ignore.*"]
-        exclude: |
-          (?x)(
-          \.po$ |
-          \.xml$ |
-          \.svg$ |
-          poetry.lock$ |
-          pyproject.toml$ |
-          requirements-.*.txt$ |
-          retirejs.json$ |
-          ^boefjes/boefjes/plugins/kat_fierce/lists |
-          ^boefjes/tests/examples/inputs/cve-result-without-cvss.json |
-          ^boefjes/tests/examples |
-          ^keiko/glossaries |
-          ^keiko/templates/.*/template.tex$ |
-          ^rocky/assets/js/vendor |
-          ^rocky/assets/css/themes/soft/fonts/tabler-icons/tabler-icons.scss$ |
-          ^rocky/tests/stubs |
-          ^rocky/reports/report_types/aggregate_organisation_report |
-          ^rocky/reports/report_types/multi_organization_report |
-          ^docs/source/_static |
-          ^boefjes/boefjes/plugins/kat_cve_2023_34039/keys/ |
-          ^boefjes/boefjes/plugins/kat_rpki/rpki.json
-          )
 
   - repo: https://github.com/Riverside-Healthcare/djLint
     rev: v1.34.1
@@ -144,7 +94,6 @@ repos:
           ^rocky/.*/templates/.*$ |
           ^rocky/reports/report_types/.*/.*\.html
           )
-        exclude: '^rocky/rocky/templates/admin/.*\.html$'
 
       - id: djlint-django
         files: |
@@ -152,7 +101,6 @@ repos:
           ^rocky/.*/templates/.*$ |
           ^rocky/reports/report_types/.*/.*\.html
           )
-        exclude: '^rocky/rocky/templates/admin/.*\.html$'
 
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.3.1
@@ -181,12 +129,4 @@ repos:
     hooks:
       - id: prettier
         additional_dependencies:
-          - prettier@3.2.5 # SEE: https://github.com/pre-commit/pre-commit/issues/3133
-        exclude: |
-          (?x)(
-          \.html$ |
-          \.json$ |
-          \.min\.js$ |
-          ^rocky/assets/css/themes/soft/fonts |
-          ^rocky/assets/vendors
-          )
+          - prettier@3.2.5

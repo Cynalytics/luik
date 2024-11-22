@@ -16,17 +16,13 @@
   },
   "root": {
     "level": "DEBUG",
-    "handlers": [
-      "console"
-    ]
+    "handlers": ["console"]
   },
   "loggers": {
     "uvicorn": {
       "level": "INFO",
       "propagate": 0,
-      "handlers": [
-        "console"
-      ]
+      "handlers": ["console"]
     }
   }
 }

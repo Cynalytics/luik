@@ -42,7 +42,7 @@ class UvicornServer(ForkProcess):
     def stop(self):
         self.terminate()
 
-    def run(self, *args, **kwargs):
+    def run(self):
         self.server.run()
 
 
