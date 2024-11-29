@@ -5,19 +5,22 @@ import structlog
 from fastapi import Depends, FastAPI, HTTPException, Response, status
 from uvicorn import Config, Server
 
-from luik.clients.boefje_runner_client import BoefjeRunnerClient
-from luik.clients.katalogus_client import KatalogusClient
-from luik.clients.octopoes_client import OctopoesClient
+from luik.clients.boefje_runner_client import (
+    BoefjeRunnerClient,
+    BoefjeRunnerClientInterface,
+)
+from luik.clients.katalogus_client import KatalogusClient, KatalogusClientInterface
+from luik.clients.octopoes_client import OctopoesClient, OctopoesClientInterface
 from luik.clients.scheduler_client import (
-    SchedulerAPIClient,
+    SchedulerClient,
     SchedulerClientInterface,
-    TaskStatus,
 )
 from luik.config import settings
 from luik.models.api_models import (
     LuikBoefjeOutputRequest,
     LuikPopRequest,
     LuikPopResponse,
+    TaskStatus,
 )
 
 app = FastAPI(title="Luik API")
@@ -25,19 +28,19 @@ logger = structlog.get_logger(__name__)
 ctx: ForkContext = multiprocessing.get_context("fork")
 
 
-def get_scheduler_client():
-    return SchedulerAPIClient(str(settings.scheduler_api))
+def get_scheduler_client() -> SchedulerClientInterface:
+    return SchedulerClient(str(settings.scheduler_api))
 
 
-def get_katalogus_client():
+def get_katalogus_client() -> KatalogusClientInterface:
     return KatalogusClient(str(settings.katalogus_db_uri))
 
 
-def get_octopoes_client():
+def get_octopoes_client() -> OctopoesClientInterface:
     return OctopoesClient(str(settings.octopoes_api))
 
 
-def get_boefje_runner_client():
+def get_boefje_runner_client() -> BoefjeRunnerClientInterface:
     return BoefjeRunnerClient(str(settings.boefje_runner_api))
 
 
@@ -71,7 +74,7 @@ def pop_task(
     queue_id: str,
     request: LuikPopRequest,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
-    katalogus_client: KatalogusClient = Depends(get_katalogus_client),
+    katalogus_client: KatalogusClientInterface = Depends(get_katalogus_client),
 ):
     logger.info("Popping task for queue: %s", queue_id)
     logger.info("With request:\n%s", request.model_dump_json())
@@ -97,8 +100,10 @@ def pop_task(
 @app.get("/boefje/input/{task_id}")  # response_model=LuikBoefjeInputResponse)
 def boefje_input(
     task_id: str,
-    scheduler_client: SchedulerAPIClient = Depends(get_scheduler_client),
-    boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client),
+    scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
+    boefje_runner_client: BoefjeRunnerClientInterface = Depends(
+        get_boefje_runner_client
+    ),
 ):
     scheduler_client.patch_task(task_id, TaskStatus.RUNNING)
 
@@ -121,7 +126,9 @@ def boefje_input(
 def boefje_output(
     task_id: str,
     boefje_output: LuikBoefjeOutputRequest,
-    boefje_runner_client: BoefjeRunnerClient = Depends(get_boefje_runner_client),
+    boefje_runner_client: BoefjeRunnerClientInterface = Depends(
+        get_boefje_runner_client
+    ),
 ):
     logger.info("Boefje output with:")
     logger.info(task_id)

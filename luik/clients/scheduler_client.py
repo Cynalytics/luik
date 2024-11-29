@@ -1,72 +1,12 @@
-import datetime
 import json
-from enum import Enum
-from typing import Any
 
 import structlog
 from httpx import Client, HTTPTransport
-from pydantic import AwareDatetime, BaseModel, Field, TypeAdapter
+from pydantic import TypeAdapter
+
+from luik.models.api_models import Filter, Queue, QueuePopRequest, Task, TaskStatus
 
 logger = structlog.get_logger(__name__)
-
-
-class Queue(BaseModel):
-    id: str
-    size: int
-
-
-class TaskStatus(Enum):
-    """Status of a task."""
-
-    PENDING = "pending"
-    QUEUED = "queued"
-    DISPATCHED = "dispatched"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
-
-
-class BoefjeMeta(BaseModel):
-    id: str
-    boefje: dict[str, Any]
-    input_ooi: str
-    arguments: dict = {}
-    organization: str
-    runnable_hash: str | None = None
-    environment: dict[str, str] = {}
-
-    started_at: AwareDatetime | None = Field(default=None)
-    ended_at: AwareDatetime | None = Field(default=None)
-
-
-class Task(BaseModel):
-    id: str
-    scheduler_id: str
-    schedule_id: str | None
-    priority: int
-    status: TaskStatus
-    type: str
-    hash: str | None = None
-    data: BoefjeMeta
-    created_at: datetime.datetime
-    modified_at: datetime.datetime
-
-
-class Filter(BaseModel):
-    column: str
-    field: str
-    operator: str
-    value: Any
-
-
-class QueuePopRequest(BaseModel):
-    filters: list[Filter]
-
-
-class BoefjeMetaRequest(BaseModel):
-    task_data: BoefjeMeta
-    oci_arguments: list[str]
 
 
 class SchedulerClientInterface:
@@ -88,7 +28,7 @@ class SchedulerClientInterface:
         raise NotImplementedError()
 
 
-class SchedulerAPIClient(SchedulerClientInterface):
+class SchedulerClient(SchedulerClientInterface):
     def __init__(self, base_url: str):
         self._session = Client(base_url=base_url, transport=HTTPTransport(retries=6))
 

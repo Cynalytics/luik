@@ -1,21 +1,20 @@
 import structlog
-from pydantic import BaseModel
 from sqlalchemy import MetaData, Table, create_engine, select
+
+from luik.models.db_models import KatalogusBoefje
 
 logger = structlog.get_logger(__name__)
 
 
-class KatalogusBoefje(BaseModel):
-    plugin_id: str
-    name: str
-    scan_level: int
-    consumes: list[str]
-    produces: list[str]
-    oci_image: str
-    oci_arguments: list[str]
+class KatalogusClientInterface:
+    def __init__(self, uri: str):
+        raise NotImplementedError()
+
+    def get_boefje_plugin(self, plugin_id: str) -> KatalogusBoefje | None:
+        raise NotImplementedError()
 
 
-class KatalogusClient:
+class KatalogusClient(KatalogusClientInterface):
     def __init__(self, uri: str):
         self._engine = create_engine(uri)
 
