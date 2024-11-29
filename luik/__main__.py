@@ -1,13 +1,6 @@
-import json
-import logging.config
-
 import structlog
 
 import luik.api
-from luik.config import settings
-
-with settings.log_cfg.open() as f:
-    logging.config.dictConfig(json.load(f))
 
 structlog.configure(
     processors=[

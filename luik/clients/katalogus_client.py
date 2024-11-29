@@ -1,5 +1,3 @@
-from typing import Any
-
 import structlog
 from pydantic import BaseModel
 from sqlalchemy import MetaData, Table, create_engine, select
@@ -54,6 +52,3 @@ class KatalogusClient:
                 oci_image=result[5],
                 oci_arguments=result[6],
             )
-
-    def get_boefje_settings(self, org_code: str, plugin_id: str) -> dict[str, Any] | None:
-        raise NotImplementedError()

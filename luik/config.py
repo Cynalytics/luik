@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
-from pydantic import AnyHttpUrl, Field, FilePath, PostgresDsn
+from pydantic import AnyHttpUrl, Field, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import structlog
 
 BASE_DIR: Path = Path(__file__).parent.resolve()
 
@@ -12,8 +13,6 @@ if os.getenv("DOCS"):
 
 
 class Settings(BaseSettings):
-    log_cfg: FilePath = Field(BASE_DIR / "logging.json", description="Path to the logging configuration file")
-
     katalogus_db_uri: PostgresDsn = Field(
         ...,
         examples=["postgresql://xx:xx@host:5432/katalogus"],
@@ -22,24 +21,41 @@ class Settings(BaseSettings):
     )
 
     scheduler_api: AnyHttpUrl = Field(
-        ..., examples=["http://localhost:8004"], description="Mula API URL", validation_alias="SCHEDULER_API"
+        ...,
+        examples=["http://localhost:8004"],
+        description="Mula API URL",
+        validation_alias="SCHEDULER_API",
     )
     katalogus_api: AnyHttpUrl = Field(
-        ..., examples=["http://localhost:8003"], description="Katalogus API URL", validation_alias="KATALOGUS_API"
+        ...,
+        examples=["http://localhost:8003"],
+        description="Katalogus API URL",
+        validation_alias="KATALOGUS_API",
     )
     octopoes_api: AnyHttpUrl = Field(
-        ..., examples=["http://localhost:8001"], description="Octopoes API URL", validation_alias="OCTOPOES_API"
+        ...,
+        examples=["http://localhost:8001"],
+        description="Octopoes API URL",
+        validation_alias="OCTOPOES_API",
     )
     boefje_runner_api: AnyHttpUrl = Field()
 
     api: AnyHttpUrl = Field(
-        ..., examples=["http://boefje:8000"], description="The URL on which the boefjes API is available"
+        "http://0.0.0.0:8019",
+        examples=["http://localhost:8000"],
     )
-    # Boefje server settings
-    api_host: str = Field("0.0.0.0", description="Host address of the Boefje API server")
-    api_port: int = Field(8000, description="Host port of the Boefje API server")
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
+    api_host: str = Field(
+        "0.0.0.0", description="Host address of the Boefje API server"
+    )
+    api_port: int = Field(8019, description="Host port of the Boefje API server")
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
+
+
+if __name__ == "__main__":
+    logger = structlog.get_logger(__name__)
+    logger.info(settings.model_dump_json())
