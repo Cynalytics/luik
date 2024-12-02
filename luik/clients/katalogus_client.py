@@ -7,9 +7,6 @@ logger = structlog.get_logger(__name__)
 
 
 class KatalogusClientInterface:
-    def __init__(self, uri: str):
-        raise NotImplementedError()
-
     def get_boefje_plugin(self, plugin_id: str) -> KatalogusBoefje | None:
         raise NotImplementedError()
 

@@ -9,9 +9,6 @@ logger = structlog.get_logger(__name__)
 
 
 class OctopoesClientInterface:
-    def __init__(self, base_url: str):
-        raise NotImplementedError()
-
     def get_ooi_by_reference(
         self, org_code: str, reference: str, valid_time: datetime
     ) -> dict[str, Any]:

@@ -6,8 +6,8 @@ from pydantic import AwareDatetime, BaseModel
 
 
 class LuikPopRequest(BaseModel):
-    task_capabilities: list[str] = []
-    reachable_networks: list[str] = []
+    task_capabilities: list[str]
+    reachable_networks: list[str]
 
 
 class LuikPopResponse(BaseModel):
@@ -93,7 +93,7 @@ class TaskStatus(Enum):
 class Task(BaseModel):
     id: str
     scheduler_id: str
-    schedule_id: str | None
+    schedule_id: str | None = None
     priority: int
     status: TaskStatus
     type: str
