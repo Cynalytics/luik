@@ -17,25 +17,25 @@ def test_luik_pop(api: TestClient):
     print(request_body)
 
     response = api.post(
-        "/pop/abc",
+        "/pop/queue_1",
         json=request_body,
     )
     assert response.status_code == 200
 
-    # response = api.post(
-    #     "/pop/queue_1",
-    #     json=request_body,
-    # )
-    # assert response.status_code == 200
+    response = api.post(
+        "/pop/queue_1",
+        json=request_body,
+    )
+    assert response.status_code == 200
 
-    # response = api.post(
-    #     "/pop/queue_1",
-    #     json=request_body,
-    # )
-    # assert response.status_code == 200
+    response = api.post(
+        "/pop/queue_1",
+        json=request_body,
+    )
+    assert response.status_code == 200
 
-    # response = api.post(
-    #     "/pop/queue_1",
-    #     json=request_body,
-    # )
-    # assert response.status_code == 204
+    response = api.post(
+        "/pop/queue_1",
+        json=request_body,
+    )
+    assert response.status_code == 204

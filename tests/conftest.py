@@ -19,10 +19,10 @@ from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
 from tests.mock_clients.mock_scheduler_client import MockSchedulerClient
 
 
-def get_mock_scheduler_client(
-    mock_poppable_tasks: dict[str, list[dict[str, Any]]],
-) -> SchedulerClientInterface:
-    return MockSchedulerClient(mock_poppable_tasks)
+def get_mock_scheduler_client() -> SchedulerClientInterface:
+    with open("./tests/mock_data/mock_pop_data.json") as f:
+        data = f.read()
+    return MockSchedulerClient(json.loads(data))
 
 
 def get_mock_katalogus_client() -> KatalogusClientInterface:

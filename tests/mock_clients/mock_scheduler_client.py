@@ -6,7 +6,6 @@ from luik.models.api_models import Arguments, BoefjeMeta, Queue, Task, TaskStatu
 
 class MockSchedulerClient(SchedulerClientInterface):
     def __init__(self, poppable_tasks: dict[str, list[dict[str, Any]]]):
-        print(poppable_tasks)
         self.poppable_tasks = poppable_tasks
 
     def get_queues(self) -> list[Queue]:
