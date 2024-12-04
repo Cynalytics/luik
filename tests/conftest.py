@@ -19,21 +19,25 @@ from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
 from tests.mock_clients.mock_scheduler_client import MockSchedulerClient
 
 
-def get_mock_scheduler_client() -> SchedulerClientInterface:
+@pytest.fixture
+def mock_scheduler_client() -> SchedulerClientInterface:
     with open("./tests/mock_data/mock_pop_data.json") as f:
         data = f.read()
     return MockSchedulerClient(json.loads(data))
 
 
-def get_mock_katalogus_client() -> KatalogusClientInterface:
+@pytest.fixture
+def mock_katalogus_client() -> KatalogusClientInterface:
     return MockKatalogusClient()
 
 
-def get_mock_octopoes_client() -> OctopoesClientInterface:
+@pytest.fixture
+def mock_octopoes_client() -> OctopoesClientInterface:
     return MockOctopoesClient()
 
 
-def get_mock_boefje_runner_client() -> BoefjeRunnerClientInterface:
+@pytest.fixture
+def mock_boefje_runner_client() -> BoefjeRunnerClientInterface:
     return MockBoefjeRunnerClient()
 
 
@@ -45,12 +49,19 @@ def mock_poppable_tasks() -> dict[str, list[dict[str, Any]]]:
 
 
 @pytest.fixture
-def api():
+def api(
+    mock_scheduler_client,
+    mock_katalogus_client,
+    mock_octopoes_client,
+    mock_boefje_runner_client,
+):
     from luik.api import app
 
-    app.dependency_overrides[get_scheduler_client] = get_mock_scheduler_client
-    app.dependency_overrides[get_katalogus_client] = get_mock_katalogus_client
-    app.dependency_overrides[get_octopoes_client] = get_mock_octopoes_client
-    app.dependency_overrides[get_boefje_runner_client] = get_mock_boefje_runner_client
+    app.dependency_overrides[get_scheduler_client] = lambda: mock_scheduler_client
+    app.dependency_overrides[get_katalogus_client] = lambda: mock_katalogus_client
+    app.dependency_overrides[get_octopoes_client] = lambda: mock_octopoes_client
+    app.dependency_overrides[get_boefje_runner_client] = (
+        lambda: mock_boefje_runner_client
+    )
 
     return TestClient(app)

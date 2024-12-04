@@ -2,6 +2,9 @@ import datetime
 from typing import Any
 from luik.clients.scheduler_client import SchedulerClientInterface
 from luik.models.api_models import Arguments, BoefjeMeta, Queue, Task, TaskStatus
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class MockSchedulerClient(SchedulerClientInterface):
@@ -20,11 +23,8 @@ class MockSchedulerClient(SchedulerClientInterface):
         if not (task_capabilities and reachable_networks):
             raise Exception(f"Empty value given to {self.pop_task.__name__}")
         queue = self.poppable_tasks.get(queue_id, None)
-
-        if queue is None:
-            raise Exception(f"Queue {queue_id} does not exist")
-
-        if len(queue) == 0:
+        logger.info(f"{task_capabilities} | {reachable_networks}")
+        if queue is None or len(queue) == 0:
             return None
         return Task.model_validate(queue.pop())
 
