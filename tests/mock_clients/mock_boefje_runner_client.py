@@ -15,4 +15,6 @@ class MockBoefjeRunnerClient(BoefjeRunnerClientInterface):
     def boefje_output(
         self, task_id: str, boefje_output: LuikBoefjeOutputRequest
     ) -> None:
-        raise NotImplementedError()
+        if self.boefje_input_data["task_id"] == task_id:
+            return
+        raise Exception("Mock error")

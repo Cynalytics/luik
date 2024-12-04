@@ -17,6 +17,7 @@ from luik.clients.scheduler_client import (
 )
 from luik.config import settings
 from luik.models.api_models import (
+    LuikBoefjeInputResponse,
     LuikBoefjeOutputRequest,
     LuikPopRequest,
     LuikPopResponse,
@@ -97,7 +98,7 @@ def pop_task(
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 
 
-@app.get("/boefje/input/{task_id}")  # response_model=LuikBoefjeInputResponse)
+@app.get("/boefje/input/{task_id}", response_model=LuikBoefjeInputResponse)
 def boefje_input(
     task_id: str,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),

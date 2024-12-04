@@ -2,7 +2,11 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from luik.models.api_models import LuikPopRequest
+from luik.models.api_models import (
+    File as RawFile,
+    LuikBoefjeOutputRequest,
+    LuikPopRequest,
+)
 
 
 def test_luik_health(api: TestClient):
@@ -58,4 +62,17 @@ def test_luik_boefje_input(api: TestClient):
     assert boefje_input["task_id"] == task_id
 
     with pytest.raises(Exception):
-        _ = api.get("/boefje/input/non-existing-task")
+        _ = api.get("/boefje/input/non_existing_task")
+
+
+def test_luik_boefje_output(api: TestClient):
+    task_id = "99b5e767-bdd9-4805-9f66-24ebc4520919"
+    req = LuikBoefjeOutputRequest(
+        status="COMPLETED", files=[RawFile(tags=[], content="aGVsbG8gdGhlcmVkZGFzZGFz")]
+    )
+
+    response = api.post(f"/boefje/output/{task_id}", json=req.model_dump())
+    assert response.status_code == 200
+
+    with pytest.raises(Exception):
+        response = api.post("/boefje/output/non_existing_task", json=req.model_dump())
