@@ -1,5 +1,4 @@
 import json
-from typing import Any
 from fastapi.testclient import TestClient
 import pytest
 
@@ -38,14 +37,9 @@ def mock_octopoes_client() -> OctopoesClientInterface:
 
 @pytest.fixture
 def mock_boefje_runner_client() -> BoefjeRunnerClientInterface:
-    return MockBoefjeRunnerClient()
-
-
-@pytest.fixture
-def mock_poppable_tasks() -> dict[str, list[dict[str, Any]]]:
-    with open("./tests/mock_data/mock_pop_data.json") as f:
+    with open("./tests/mock_data/mock_boefje_input.json") as f:
         data = f.read()
-    return json.loads(data)
+    return MockBoefjeRunnerClient(json.loads(data))
 
 
 @pytest.fixture

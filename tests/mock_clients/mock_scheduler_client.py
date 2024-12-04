@@ -29,7 +29,12 @@ class MockSchedulerClient(SchedulerClientInterface):
         return Task.model_validate(queue.pop())
 
     def patch_task(self, task_id: str, status: TaskStatus) -> None:
-        raise NotImplementedError()
+        for queue in self.poppable_tasks.values():
+            for task in queue:
+                task["status"] = status.value
+                return
+
+        raise Exception(f"Mock does not contain task id: {task_id}")
 
     def get_task(self, task_id: str) -> Task:
         raise NotImplementedError()

@@ -1,3 +1,5 @@
+import json
+import pytest
 from fastapi.testclient import TestClient
 
 from luik.models.api_models import LuikPopRequest
@@ -45,3 +47,15 @@ def test_luik_pop(api: TestClient):
         json=request_body,
     )
     assert response.status_code == 204
+
+
+def test_luik_boefje_input(api: TestClient):
+    task_id = "99b5e767-bdd9-4805-9f66-24ebc4520919"
+    response = api.get(f"/boefje/input/{task_id}")
+
+    boefje_input = json.loads(response.content)
+    assert response.is_success
+    assert boefje_input["task_id"] == task_id
+
+    with pytest.raises(Exception):
+        _ = api.get("/boefje/input/non-existing-task")

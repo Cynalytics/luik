@@ -5,7 +5,7 @@
       "scheduler_id": "boefje-cyn",
       "schedule_id": "ef4d1a4c-ab51-44d1-ba49-e0de16dc9972",
       "priority": 2,
-      "status": "dispatched",
+      "status": "queued",
       "type": "boefje",
       "hash": "5bf1c1bd3e7b7e1a9d0d6675beeaf01c",
       "data": {
@@ -31,7 +31,7 @@
       "hash": "5bf1c1bd3e7b7e1a9d0d6675beeaf01c",
       "priority": 2,
       "type": "boefje",
-      "status": "dispatched",
+      "status": "queued",
       "data": {
         "id": "774bde73-96ee-4b6d-a1ba-672a719c7096",
         "boefje": {

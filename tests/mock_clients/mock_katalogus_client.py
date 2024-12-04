@@ -4,7 +4,7 @@ from luik.models.db_models import KatalogusBoefje
 
 class MockKatalogusClient(KatalogusClientInterface):
     def get_boefje_plugin(self, plugin_id: str) -> KatalogusBoefje | None:
-        if plugin_id == "non-existent":
+        if plugin_id == "non_existent":
             return None
         return KatalogusBoefje(
             plugin_id=plugin_id,
