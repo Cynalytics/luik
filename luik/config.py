@@ -14,36 +14,22 @@ if os.getenv("DOCS"):
 
 class Settings(BaseSettings):
     katalogus_db_uri: PostgresDsn = Field(
-        ...,
         examples=["postgresql://xx:xx@host:5432/katalogus"],
         description="Katalogus Postgres DB URI",
-        validation_alias="KATALOGUS_DB_URI",
     )
 
     scheduler_api: AnyHttpUrl = Field(
-        ...,
-        examples=["http://localhost:8004"],
-        description="Mula API URL",
-        validation_alias="SCHEDULER_API",
+        examples=["http://localhost:8004"], description="Mula API URL"
     )
     katalogus_api: AnyHttpUrl = Field(
-        ...,
-        examples=["http://localhost:8003"],
-        description="Katalogus API URL",
-        validation_alias="KATALOGUS_API",
+        examples=["http://localhost:8003"], description="Katalogus API URL"
     )
     octopoes_api: AnyHttpUrl = Field(
-        ...,
-        examples=["http://localhost:8001"],
-        description="Octopoes API URL",
-        validation_alias="OCTOPOES_API",
+        examples=["http://localhost:8001"], description="Octopoes API URL"
     )
     boefje_runner_api: AnyHttpUrl = Field()
 
-    api: AnyHttpUrl = Field(
-        AnyHttpUrl("http://localhost:8019"),
-        examples=["http://localhost:8000"],
-    )
+    api: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8019"))
 
     api_host: str = Field(
         "localhost", description="Host address of the Boefje API server"
