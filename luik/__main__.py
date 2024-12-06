@@ -21,7 +21,7 @@ structlog.configure(
 logger = structlog.get_logger(__name__)
 
 
-def main():
+def main() -> None:
     logger.info("Starting runtime for %s", __name__)
     luik.api.run()
     logger.info("Ended runtime for %s", __name__)

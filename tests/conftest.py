@@ -48,7 +48,7 @@ def api(
     mock_katalogus_client,
     mock_octopoes_client,
     mock_boefje_runner_client,
-):
+) -> TestClient:
     from luik.api import app
 
     app.dependency_overrides[get_scheduler_client] = lambda: mock_scheduler_client

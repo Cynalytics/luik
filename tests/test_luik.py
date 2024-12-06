@@ -9,13 +9,13 @@ from luik.models.api_models import (
 )
 
 
-def test_luik_health(api: TestClient):
+def test_luik_health(api: TestClient) -> None:
     response = api.get("/health")
     assert response.status_code == 200
     assert response.text == "OK"
 
 
-def test_luik_pop(api: TestClient):
+def test_luik_pop(api: TestClient) -> None:
     request_body = LuikPopRequest(
         reachable_networks=["a"], task_capabilities=["b"]
     ).model_dump()
@@ -53,7 +53,7 @@ def test_luik_pop(api: TestClient):
     assert response.status_code == 204
 
 
-def test_luik_boefje_input(api: TestClient):
+def test_luik_boefje_input(api: TestClient) -> None:
     task_id = "99b5e767-bdd9-4805-9f66-24ebc4520919"
     response = api.get(f"/boefje/input/{task_id}")
 
@@ -65,7 +65,7 @@ def test_luik_boefje_input(api: TestClient):
         _ = api.get("/boefje/input/non_existing_task")
 
 
-def test_luik_boefje_output(api: TestClient):
+def test_luik_boefje_output(api: TestClient) -> None:
     task_id = "99b5e767-bdd9-4805-9f66-24ebc4520919"
     req = LuikBoefjeOutputRequest(
         status="COMPLETED", files=[RawFile(tags=[], content="aGVsbG8gdGhlcmVkZGFzZGFz")]

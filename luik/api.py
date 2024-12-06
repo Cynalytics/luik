@@ -1,5 +1,6 @@
 import multiprocessing
 from multiprocessing.context import ForkContext, ForkProcess
+from typing import Any
 
 import structlog
 from fastapi import Depends, FastAPI, HTTPException, Response, status
@@ -17,7 +18,6 @@ from luik.clients.scheduler_client import (
 )
 from luik.config import settings
 from luik.models.api_models import (
-    LuikBoefjeInputResponse,
     LuikBoefjeOutputRequest,
     LuikPopRequest,
     LuikPopResponse,
@@ -51,14 +51,14 @@ class UvicornServer(ForkProcess):
         self.server = Server(config=config)
         self.config = config
 
-    def stop(self):
+    def stop(self) -> None:
         self.terminate()
 
-    def run(self):
+    def run(self) -> None:
         self.server.run()
 
 
-def run():
+def run() -> UvicornServer:
     config = Config(app, host=settings.api_host, port=settings.api_port)
     instance = UvicornServer(config=config)
     instance.start()
@@ -66,7 +66,7 @@ def run():
 
 
 @app.get("/health")
-def health():
+def health() -> Response:
     return Response("OK", status_code=status.HTTP_200_OK)
 
 
@@ -76,7 +76,7 @@ def pop_task(
     request: LuikPopRequest,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
     katalogus_client: KatalogusClientInterface = Depends(get_katalogus_client),
-):
+) -> LuikPopResponse | Response:
     logger.info("Popping task for queue: %s", queue_id)
     logger.info("With request:\n%s", request.model_dump_json())
     task = scheduler_client.pop_task(
@@ -98,14 +98,14 @@ def pop_task(
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 
 
-@app.get("/boefje/input/{task_id}", response_model=LuikBoefjeInputResponse)
+@app.get("/boefje/input/{task_id}")
 def boefje_input(
     task_id: str,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
     boefje_runner_client: BoefjeRunnerClientInterface = Depends(
         get_boefje_runner_client
     ),
-):
+) -> dict[str, Any]:
     scheduler_client.patch_task(task_id, TaskStatus.RUNNING)
 
     prepared_boefje_input = boefje_runner_client.boefje_input(task_id)
@@ -130,7 +130,7 @@ def boefje_output(
     boefje_runner_client: BoefjeRunnerClientInterface = Depends(
         get_boefje_runner_client
     ),
-):
+) -> Any:
     logger.info("Boefje output with:")
     logger.info(task_id)
     logger.info(boefje_output.model_dump_json())

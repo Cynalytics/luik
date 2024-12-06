@@ -41,19 +41,19 @@ class Settings(BaseSettings):
     boefje_runner_api: AnyHttpUrl = Field()
 
     api: AnyHttpUrl = Field(
-        "http://0.0.0.0:8019",
+        AnyHttpUrl("http://localhost:8019"),
         examples=["http://localhost:8000"],
     )
 
     api_host: str = Field(
-        "0.0.0.0", description="Host address of the Boefje API server"
+        "localhost", description="Host address of the Boefje API server"
     )
     api_port: int = Field(8019, description="Host port of the Boefje API server")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
-settings = Settings()  # type: ignore
+settings = Settings()
 
 
 if __name__ == "__main__":
