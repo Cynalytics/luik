@@ -31,12 +31,19 @@ class Settings(BaseSettings):
 
     api: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8019"))
 
-    api_host: str = Field(
-        "localhost", description="Host address of the Boefje API server"
-    )
-    api_port: int = Field(8019, description="Host port of the Boefje API server")
-
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    @property
+    def api_host(self) -> str:
+        if not self.api.host:
+            raise Exception("Api does not have a host")
+        return self.api.host
+
+    @property
+    def api_port(self) -> int:
+        if not self.api.port:
+            raise Exception("Api does not have a port")
+        return self.api.port
 
 
 settings = Settings()
