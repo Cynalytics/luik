@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     boefje_runner_api: AnyHttpUrl = Field()
 
     api: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8019"))
+    
+    response_host: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8019"))
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

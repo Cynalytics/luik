@@ -116,7 +116,7 @@ def boefje_input(
         )
 
     prepared_boefje_input["output_url"] = (
-        str(settings.api).rstrip("/")
+        str(settings.response_host).rstrip("/")
         + f"/boefje/output/{task_id}"  # TODO: is this the correct way of giving the url?
     )
 
