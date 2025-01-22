@@ -9,3 +9,7 @@ Interface for kittens to communicate with an OpenKAT instance from a single api
 This project makes use of [Poetry](https://github.com/python-poetry/poetry). You can run it by using:
 
 `poetry run python -m luik`
+
+You can also run it using docker compose with:
+
+`docker compose up`
