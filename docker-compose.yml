@@ -1,0 +1,10 @@
+services:
+  luik:
+    ports:
+      - "0.0.0.0:8019:8019"
+    command: python -m luik
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile

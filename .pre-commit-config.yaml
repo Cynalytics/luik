@@ -1,4 +1,14 @@
 repos:
+  - repo: local
+    hooks:
+      - id: update-requirements-txt
+        name: "Update requirements.txt"
+        description: "Generate requirements.txt based on poetry.lock"
+        entry: poetry
+        args: [export, --format, requirements.txt, --output, requirements.txt]
+        language: system
+        pass_filenames: false
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -11,9 +21,7 @@ repos:
       - id: check-json
       - id: check-toml
       - id: debug-statements
-
       - id: end-of-file-fixer
-
       - id: fix-byte-order-marker
 
   - repo: https://github.com/abravalheri/validate-pyproject
