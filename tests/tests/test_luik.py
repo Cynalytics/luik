@@ -88,3 +88,28 @@ def test_luik_authentication(api: TestClient) -> None:
         json={"task_capabilities": ["foo"], "reachable_networks": ["bar"]},
     )
     assert response.status_code == 401
+
+    response = api.get(
+        "/boefje/input/foo",
+    )
+    assert response.status_code == 401
+
+    response = api.post(
+        "/boefje/output/foo",
+        json={
+            "status": "COMPLETED",
+            "files": [
+                {
+                    "name": "name",
+                    "content": "SGFsbG8gY3luYWx5dGljcyA6KQ==",
+                    "tags": ["string"],
+                }
+            ],
+        },
+    )
+    assert response.status_code == 401
+
+    response = api.get(
+        "/health",
+    )
+    assert response.is_success
