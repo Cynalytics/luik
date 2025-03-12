@@ -3,6 +3,7 @@ from typing import Any
 import structlog
 from httpx import Client, HTTPTransport
 from pydantic import TypeAdapter
+from luik.config import settings
 
 from luik.models.api_models import LuikBoefjeOutputRequest
 
@@ -38,3 +39,7 @@ class BoefjeRunnerClient(BoefjeRunnerClientInterface):
         if response.is_error:
             logger.error(response.text)
         response.raise_for_status()
+
+
+def get_boefje_runner_client() -> BoefjeRunnerClientInterface:
+    return BoefjeRunnerClient(str(settings.boefje_runner_api))

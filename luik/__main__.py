@@ -1,6 +1,6 @@
 import structlog
 
-import luik.api
+import luik.server
 
 structlog.configure(
     processors=[
@@ -22,7 +22,7 @@ logger = structlog.get_logger(__name__)
 
 def main() -> None:
     logger.info("Starting runtime for %s", __name__)
-    luik.api.run()
+    luik.server.run()
     logger.info("Ended runtime for %s", __name__)
 
 

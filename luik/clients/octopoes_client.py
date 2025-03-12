@@ -4,6 +4,7 @@ from typing import Any
 import structlog
 from httpx import Client, HTTPTransport
 from pydantic import TypeAdapter
+from luik.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -27,3 +28,7 @@ class OctopoesClient(OctopoesClientInterface):
             params={"reference": str(reference), "valid_time": str(valid_time)},
         )
         return TypeAdapter(dict[str, Any]).validate_json(res.content)
+
+
+def get_octopoes_client() -> OctopoesClientInterface:
+    return OctopoesClient(str(settings.octopoes_api))

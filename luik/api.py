@@ -1,20 +1,17 @@
-import multiprocessing
-from multiprocessing.context import ForkContext, ForkProcess
 from typing import Any
 
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 import structlog
-from fastapi import Depends, FastAPI, HTTPException, Response, status
-from uvicorn import Config, Server
 
+from luik.auth import authenticate_token
 from luik.clients.boefje_runner_client import (
-    BoefjeRunnerClient,
     BoefjeRunnerClientInterface,
+    get_boefje_runner_client,
 )
-from luik.clients.katalogus_client import KatalogusClient, KatalogusClientInterface
-from luik.clients.octopoes_client import OctopoesClient, OctopoesClientInterface
+from luik.clients.katalogus_client import KatalogusClientInterface, get_katalogus_client
 from luik.clients.scheduler_client import (
-    SchedulerClient,
     SchedulerClientInterface,
+    get_scheduler_client,
 )
 from luik.config import settings
 from luik.models.api_models import (
@@ -24,53 +21,13 @@ from luik.models.api_models import (
     TaskStatus,
 )
 
-app = FastAPI(title="Luik API")
+
 logger = structlog.get_logger(__name__)
-ctx: ForkContext = multiprocessing.get_context("fork")
+
+router = APIRouter(dependencies=[Depends(authenticate_token)])
 
 
-def get_scheduler_client() -> SchedulerClientInterface:
-    return SchedulerClient(str(settings.scheduler_api))
-
-
-def get_katalogus_client() -> KatalogusClientInterface:
-    return KatalogusClient(str(settings.katalogus_db_uri))
-
-
-def get_octopoes_client() -> OctopoesClientInterface:
-    return OctopoesClient(str(settings.octopoes_api))
-
-
-def get_boefje_runner_client() -> BoefjeRunnerClientInterface:
-    return BoefjeRunnerClient(str(settings.boefje_runner_api))
-
-
-class UvicornServer(ForkProcess):
-    def __init__(self, config: Config):
-        super().__init__()
-        self.server = Server(config=config)
-        self.config = config
-
-    def stop(self) -> None:
-        self.terminate()
-
-    def run(self) -> None:
-        self.server.run()
-
-
-def run() -> UvicornServer:
-    config = Config(app, host=settings.api_host, port=settings.api_port)
-    instance = UvicornServer(config=config)
-    instance.start()
-    return instance
-
-
-@app.get("/health")
-def health() -> Response:
-    return Response("OK", status_code=status.HTTP_200_OK)
-
-
-@app.post("/pop/{queue_id}", response_model=LuikPopResponse)
+@router.post("/pop/{queue_id}", response_model=LuikPopResponse)
 def pop_task(
     queue_id: str,
     request: LuikPopRequest,
@@ -98,7 +55,7 @@ def pop_task(
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 
 
-@app.get("/boefje/input/{task_id}")
+@router.get("/boefje/input/{task_id}")
 def boefje_input(
     task_id: str,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
@@ -123,7 +80,7 @@ def boefje_input(
     return prepared_boefje_input
 
 
-@app.post("/boefje/output/{task_id}")
+@router.post("/boefje/output/{task_id}")
 def boefje_output(
     task_id: str,
     boefje_output: LuikBoefjeOutputRequest,

@@ -2,6 +2,7 @@ import structlog
 from sqlalchemy import MetaData, Table, create_engine, select
 
 from luik.models.db_models import KatalogusBoefje
+from luik.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -48,3 +49,7 @@ class KatalogusClient(KatalogusClientInterface):
                 oci_image=result[5],
                 oci_arguments=result[6],
             )
+
+
+def get_katalogus_client() -> KatalogusClientInterface:
+    return KatalogusClient(str(settings.katalogus_db_uri))

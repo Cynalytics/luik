@@ -5,6 +5,7 @@ from httpx import Client, HTTPTransport
 from pydantic import TypeAdapter
 
 from luik.models.api_models import Filter, Queue, QueuePopRequest, Task, TaskStatus
+from luik.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -86,3 +87,7 @@ class SchedulerClient(SchedulerClientInterface):
         response.raise_for_status()
 
         return Task.model_validate_json(response.content)
+
+
+def get_scheduler_client() -> SchedulerClientInterface:
+    return SchedulerClient(str(settings.scheduler_api))

@@ -34,12 +34,16 @@ psycopg2 = "^2.9.10"
 structlog = "^24.4.0"
 pydantic-settings = "^2.6.1"
 pydantic = "^2.10.3"
+passlib = "^1.7.4"
+pyjwt = "^2.10.1"
+python-multipart = "^0.0.20"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 mypy = "^1.13.0"
 pytest-env = "^1.1.5"
+types-passlib = "^1.7.7.20241221"
 
 
 [build-system]
