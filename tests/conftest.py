@@ -2,16 +2,16 @@ import json
 from fastapi.testclient import TestClient
 import pytest
 
-from luik.api import (
+from luik.clients.boefje_runner_client import (
+    BoefjeRunnerClientInterface,
     get_boefje_runner_client,
-    get_katalogus_client,
-    get_octopoes_client,
+)
+from luik.clients.katalogus_client import KatalogusClientInterface, get_katalogus_client
+from luik.clients.scheduler_client import (
+    SchedulerClientInterface,
     get_scheduler_client,
 )
-from luik.clients.boefje_runner_client import BoefjeRunnerClientInterface
-from luik.clients.katalogus_client import KatalogusClientInterface
-from luik.clients.octopoes_client import OctopoesClientInterface
-from luik.clients.scheduler_client import SchedulerClientInterface
+from luik.clients.octopoes_client import OctopoesClientInterface, get_octopoes_client
 from tests.mock_clients.mock_boefje_runner_client import MockBoefjeRunnerClient
 from tests.mock_clients.mock_katalogus_client import MockKatalogusClient
 from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
@@ -44,12 +44,12 @@ def mock_boefje_runner_client() -> BoefjeRunnerClientInterface:
 
 @pytest.fixture
 def api(
-    mock_scheduler_client,
-    mock_katalogus_client,
-    mock_octopoes_client,
-    mock_boefje_runner_client,
+    mock_scheduler_client: SchedulerClientInterface,
+    mock_katalogus_client: KatalogusClientInterface,
+    mock_octopoes_client: OctopoesClientInterface,
+    mock_boefje_runner_client: BoefjeRunnerClientInterface,
 ) -> TestClient:
-    from luik.api import app
+    from luik.server import app
 
     app.dependency_overrides[get_scheduler_client] = lambda: mock_scheduler_client
     app.dependency_overrides[get_katalogus_client] = lambda: mock_katalogus_client
@@ -59,3 +59,31 @@ def api(
     )
 
     return TestClient(app)
+
+
+@pytest.fixture
+def authenticated_api(
+    mock_scheduler_client: SchedulerClientInterface,
+    mock_katalogus_client: KatalogusClientInterface,
+    mock_octopoes_client: OctopoesClientInterface,
+    mock_boefje_runner_client: BoefjeRunnerClientInterface,
+) -> TestClient:
+    from luik.server import app
+
+    app.dependency_overrides[get_scheduler_client] = lambda: mock_scheduler_client
+    app.dependency_overrides[get_katalogus_client] = lambda: mock_katalogus_client
+    app.dependency_overrides[get_octopoes_client] = lambda: mock_octopoes_client
+    app.dependency_overrides[get_boefje_runner_client] = (
+        lambda: mock_boefje_runner_client
+    )
+
+    client = TestClient(app)
+    response = client.post(
+        "/token",
+        data={"username": "settings.username", "password": "settings.password"},
+    )
+    print(response.json())
+    token = response.json()["access_token"]
+    client.headers.update({"Authorization": f"Bearer {token}"})
+
+    return client
