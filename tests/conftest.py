@@ -1,4 +1,5 @@
 import json
+import os
 from fastapi.testclient import TestClient
 import pytest
 
@@ -16,6 +17,25 @@ from tests.mock_clients.mock_boefje_runner_client import MockBoefjeRunnerClient
 from tests.mock_clients.mock_katalogus_client import MockKatalogusClient
 from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
 from tests.mock_clients.mock_scheduler_client import MockSchedulerClient
+
+PLACEHOLDER_URL = "http://localhost:0"
+PASSWORD = "super_secret_password"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def set_env() -> None:
+    os.environ["OCTOPOES_API"] = PLACEHOLDER_URL
+    os.environ["KATALOGUS_API"] = PLACEHOLDER_URL
+    os.environ["SCHEDULER_API"] = PLACEHOLDER_URL
+    os.environ["BOEFJE_RUNNER_API"] = PLACEHOLDER_URL
+
+    os.environ["KATALOGUS_DB_URI"] = (
+        f"postgresql://katalogus_db:foo@{PLACEHOLDER_URL}/katalogus"
+    )
+    os.environ["AUTH_PASSWORD"] = PASSWORD
+
+    os.environ["API"] = PLACEHOLDER_URL
+    os.environ["RESPONSE_HOST"] = PLACEHOLDER_URL
 
 
 @pytest.fixture
@@ -80,7 +100,7 @@ def authenticated_api(
     client = TestClient(app)
     response = client.post(
         "/token",
-        data={"username": "settings.username", "password": "settings.password"},
+        data={"username": "settings.username", "password": PASSWORD},
     )
     print(response.json())
     token = response.json()["access_token"]

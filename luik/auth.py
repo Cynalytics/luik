@@ -9,6 +9,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from starlette import status
 
+from luik.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -24,23 +25,28 @@ class TokenResponse(BaseModel):
 
 
 def get_access_token(form_data: OAuth2PasswordRequestForm) -> tuple[str, datetime]:
-    system_username = "settings.username"
-    hashed_password = pwd_context.hash("settings.password")
+    # TODO: Have each kitten have their own username and password
+    system_username = "username"
+    hashed_password = pwd_context.hash(settings.auth_password)
 
-    logger.info(str(form_data))
-
-    authenticated = form_data.username == system_username and pwd_context.verify(
-        form_data.password, hashed_password
-    )
-
-    if not authenticated:
+    if not (
+        form_data.username == system_username
+        and pwd_context.verify(form_data.password, hashed_password)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return _create_access_token(form_data, "settings.secret", 10.0)
+    token_expiration = datetime.now(timezone.utc) + timedelta(minutes=10.0)
+    access_token = jwt.encode(
+        {"sub": form_data.username, "exp": token_expiration},
+        "settings.secret",
+        algorithm=ALGORITHM,
+    )
+
+    return access_token, token_expiration
 
 
 def authenticate_token(token: str = Depends(oauth2_scheme)) -> str:
@@ -57,25 +63,7 @@ def authenticate_token(token: str = Depends(oauth2_scheme)) -> str:
         if username is None:
             raise credentials_exception
 
+        logger.info("Authenticated user: %s", username)
         return str(username)
     except InvalidTokenError as error:
         raise credentials_exception from error
-
-
-def _create_access_token(
-    form_data: OAuth2PasswordRequestForm,
-    secret: str,
-    access_token_expire_minutes: float,
-) -> tuple[str, datetime]:
-    expire_time = _get_expire_time(access_token_expire_minutes)
-    data = {"sub": form_data.username, "exp": expire_time}
-
-    access_token: str = jwt.encode(data.copy(), secret, algorithm=ALGORITHM)
-
-    return access_token, expire_time
-
-
-def _get_expire_time(access_token_expire_minutes: float) -> datetime:
-    access_token_expires = timedelta(minutes=access_token_expire_minutes)
-
-    return datetime.now(timezone.utc) + access_token_expires
