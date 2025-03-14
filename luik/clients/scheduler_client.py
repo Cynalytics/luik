@@ -65,8 +65,9 @@ class SchedulerClient(SchedulerClientInterface):
             )
 
         response = self._session.post(
-            f"/queues/{queue_id}/pop",
+            f"/schedulers/{queue_id}/pop",
             content=QueuePopRequest(filters=filters).model_dump_json(),
+            params={"limit": 1},
         )
 
         # TODO: Currently openkat returns an error (404) when no task is found. This needs better handling
@@ -74,7 +75,13 @@ class SchedulerClient(SchedulerClientInterface):
         logger.info("Content of pop_task:\n%s", response.text)
         if response.is_error:
             return None
-        return TypeAdapter(Task | None).validate_json(response.content)
+
+        dict_response = response.json()
+
+        if dict_response["count"] == 0:
+            return None
+
+        return TypeAdapter(Task | None).validate_python(dict_response["results"][0])
 
     def patch_task(self, task_id: str, status: TaskStatus) -> None:
         response = self._session.patch(
