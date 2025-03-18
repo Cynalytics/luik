@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 import structlog
@@ -56,15 +57,15 @@ def pop_task(
 
 @router.get("/boefje/input/{task_id}")
 def boefje_input(
-    task_id: str,
+    task_id: UUID,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
     boefje_runner_client: BoefjeRunnerClientInterface = Depends(
         get_boefje_runner_client
     ),
 ) -> dict[str, Any]:
-    scheduler_client.patch_task(task_id, TaskStatus.RUNNING)
+    scheduler_client.patch_task(str(task_id), TaskStatus.RUNNING)
 
-    prepared_boefje_input = boefje_runner_client.boefje_input(task_id)
+    prepared_boefje_input = boefje_runner_client.boefje_input(str(task_id))
     if prepared_boefje_input is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
