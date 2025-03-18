@@ -12,7 +12,7 @@ from luik.models.api_models import (
 def test_luik_health(api: TestClient) -> None:
     response = api.get("/health")
     assert response.status_code == 200
-    assert response.text == "OK"
+    assert response.text == '"OK"'
 
 
 def test_luik_pop(authenticated_api: TestClient) -> None:
@@ -61,8 +61,10 @@ def test_luik_boefje_input(authenticated_api: TestClient) -> None:
     assert response.is_success
     assert boefje_input["task_id"] == task_id
 
-    with pytest.raises(Exception):
-        _ = authenticated_api.get("/boefje/input/non_existing_task")
+    response = authenticated_api.get(
+        "/boefje/input/4b9aeb29-08a1-4a49-a0aa-84725e594d3a"
+    )
+    assert response.status_code == 404
 
 
 def test_luik_boefje_output(authenticated_api: TestClient) -> None:

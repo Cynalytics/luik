@@ -66,6 +66,9 @@ def boefje_input(
     scheduler_client.patch_task(str(task_id), TaskStatus.RUNNING)
 
     prepared_boefje_input = boefje_runner_client.boefje_input(str(task_id))
+    logger.info(
+        "Task %s is running.", task_id, prepared_boefje_input=prepared_boefje_input
+    )
     if prepared_boefje_input is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

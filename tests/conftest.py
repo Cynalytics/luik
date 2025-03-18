@@ -19,7 +19,7 @@ from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
 from tests.mock_clients.mock_scheduler_client import MockSchedulerClient
 
 PLACEHOLDER_URL = "http://localhost:0"
-PASSWORD = "super_secret_password"
+PASSWORD = "ac36e8d26bd00b068bf0c3558eac748402d14f469f908eb7ff92b0ead9700dda"  # "super_secret_password" hashed
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -32,10 +32,9 @@ def set_env() -> None:
     os.environ["KATALOGUS_DB_URI"] = (
         f"postgresql://katalogus_db:foo@{PLACEHOLDER_URL}/katalogus"
     )
-    os.environ["AUTH_PASSWORD"] = PASSWORD
+    os.environ["TOKEN_SECRET"] = PASSWORD
 
     os.environ["API"] = PLACEHOLDER_URL
-    os.environ["RESPONSE_HOST"] = PLACEHOLDER_URL
 
 
 @pytest.fixture
@@ -98,12 +97,6 @@ def authenticated_api(
     )
 
     client = TestClient(app)
-    response = client.post(
-        "/token",
-        data={"username": "settings.username", "password": PASSWORD},
-    )
-    print(response.json())
-    token = response.json()["access_token"]
-    client.headers.update({"Authorization": f"Bearer {token}"})
+    client.headers.update({"luik-api-key": "super_secret_password"})
 
     return client
