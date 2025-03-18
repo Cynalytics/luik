@@ -11,7 +11,8 @@ env = [
     "KATALOGUS_API = http://a:1",
     "SCHEDULER_API = http://a:1",
     "BOEFJE_RUNNER_API = http://a:1",
-    "KATALOGUS_DB_URI = postgresql://a:1@b"
+    "KATALOGUS_DB_URI = postgresql://a:1@b",
+    "TOKEN_SECRET = a"
 ]
 
 [tool.ruff.lint.isort]
