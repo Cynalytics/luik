@@ -74,9 +74,9 @@ def boefje_input(
 
     prepared_boefje_input["output_url"] = (
         str(settings.response_host).rstrip("/")
-        + f"/boefje/output/{task_id}"  # TODO: is this the correct way of giving the url?
+        + f"/boefje_output/{task_id}"  # TODO: is this the correct way of giving the url?
     )
-
+    logger.info("Boefje input:\n%s", prepared_boefje_input)
     return prepared_boefje_input
 
 
@@ -88,9 +88,6 @@ def boefje_output(
         get_boefje_runner_client
     ),
 ) -> Any:
-    logger.info("Boefje output with:")
-    logger.info(task_id)
-    logger.info(boefje_output.model_dump_json())
     try:
         boefje_runner_client.boefje_output(task_id, boefje_output)
     except HTTPException as e:
