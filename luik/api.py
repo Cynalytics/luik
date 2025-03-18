@@ -13,7 +13,6 @@ from luik.clients.scheduler_client import (
     SchedulerClientInterface,
     get_scheduler_client,
 )
-from luik.config import settings
 from luik.models.api_models import (
     LuikBoefjeOutputRequest,
     LuikPopRequest,
@@ -72,10 +71,6 @@ def boefje_input(
             detail=f"Could not get boefje input from task: {task_id}.",
         )
 
-    prepared_boefje_input["output_url"] = (
-        str(settings.response_host).rstrip("/")
-        + f"/boefje_output/{task_id}"  # TODO: is this the correct way of giving the url?
-    )
     logger.info("Boefje input:\n%s", prepared_boefje_input)
     return prepared_boefje_input
 

@@ -31,8 +31,6 @@ class Settings(BaseSettings):
 
     api: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8019"))
 
-    response_host: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8007"))
-
     auth_password: str = Field(
         examples=["password"], description="Password for authentication"
     )
