@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 from fastapi.testclient import TestClient
@@ -19,9 +20,8 @@ from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
 from tests.mock_clients.mock_scheduler_client import MockSchedulerClient
 
 PLACEHOLDER_URL = "http://localhost:0"
-HASHED_PASSWORD = "10a6e6cc8311a3e2bcc09bf6c199adecd5dd59408c343e926b129c4914f3cb01"  # "test_password" hashed
-
-
+UNHASHED_PASSWORD = "test_password"
+HASHED_PASSWORD = hashlib.sha256(UNHASHED_PASSWORD.encode(encoding="utf-8")).hexdigest()
 
 
 @pytest.fixture
@@ -89,6 +89,6 @@ def authenticated_api(
     )
 
     client = TestClient(app)
-    client.headers.update({"luik-api-key": "super_secret_password"})
-
+    client.headers.update({"luik-api-key": UNHASHED_PASSWORD})
+    
     return client
