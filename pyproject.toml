@@ -20,7 +20,7 @@ split-on-trailing-comma = false
 
 [tool.poetry]
 name = "luik"
-version = "0.1.0"
+version = "0.2.0"
 description = "An api for kittens to have a single endpoint to communicate with OpenKAT"
 authors = ["Soufyan Abdellati <abdellatis149@gmail.com>"]
 readme = "README.md"
