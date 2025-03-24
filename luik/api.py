@@ -60,8 +60,13 @@ def boefje_input(
         get_boefje_runner_client
     ),
 ) -> dict[str, Any]:
-    scheduler_client.patch_task(str(task_id), TaskStatus.RUNNING)
-
+    try:
+        scheduler_client.patch_task(str(task_id), TaskStatus.RUNNING)
+    except HTTPException as e:
+        raise HTTPException(
+            status_code=e.status_code,
+            detail=f"Could not patch task to running.\n{e.detail}",
+        )
     prepared_boefje_input = boefje_runner_client.boefje_input(str(task_id))
     logger.info(
         "Task %s is running.", task_id, prepared_boefje_input=prepared_boefje_input
@@ -87,7 +92,8 @@ def boefje_output(
     try:
         boefje_runner_client.boefje_output(task_id, boefje_output)
     except HTTPException as e:
-        return HTTPException(
+        logger.error("Calling the boefje output went wrong.", exc_info=e)
+        raise HTTPException(
             status_code=e.status_code,
             detail=f"Calling the boefje output went wrong.\n{e.detail}",
         )

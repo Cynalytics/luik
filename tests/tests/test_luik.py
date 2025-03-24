@@ -20,34 +20,26 @@ def test_luik_pop(authenticated_api: TestClient) -> None:
         reachable_networks=["a"], task_capabilities=["b"]
     ).model_dump()
 
-    print(request_body)
-
     response = authenticated_api.post(
-        "/pop/full_queue",
+        "/pop",
         json=request_body,
     )
     assert response.status_code == 200
 
     response = authenticated_api.post(
-        "/pop/full_queue",
+        "/pop",
         json=request_body,
     )
     assert response.status_code == 200
 
     response = authenticated_api.post(
-        "/pop/full_queue",
+        "/pop",
         json=request_body,
     )
     assert response.status_code == 204
 
     response = authenticated_api.post(
-        "/pop/empty_queue",
-        json=request_body,
-    )
-    assert response.status_code == 204
-
-    response = authenticated_api.post(
-        "/pop/non_existing_queue",
+        "/pop",
         json=request_body,
     )
     assert response.status_code == 204
@@ -86,7 +78,7 @@ def test_luik_boefje_output(authenticated_api: TestClient) -> None:
 
 def test_luik_authentication(api: TestClient) -> None:
     response = api.post(
-        "/pop/full_queue",
+        "/pop",
         json={"task_capabilities": ["foo"], "reachable_networks": ["bar"]},
     )
     assert response.status_code == 401
