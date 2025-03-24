@@ -7,11 +7,6 @@ import structlog
 
 BASE_DIR: Path = Path(__file__).parent.resolve()
 
-# Set base dir to something generic when compiling environment docs
-if os.getenv("DOCS"):
-    BASE_DIR = Path("../")
-
-
 class Settings(BaseSettings):
     katalogus_db_uri: PostgresDsn = Field(
         examples=["postgresql://xx:xx@host:5432/katalogus"],
