@@ -16,7 +16,6 @@ class SchedulerClientInterface:
 
     def pop_task(
         self,
-        queue_id: str,
         task_capabilities: list[str] = [],
         reachable_networks: list[str] = [],
     ) -> Task | None:
@@ -35,7 +34,6 @@ class SchedulerClient(SchedulerClientInterface):
 
     def pop_task(
         self,
-        queue_id: str,
         task_capabilities: list[str] = [],
         reachable_networks: list[str] = [],
     ) -> Task | None:
@@ -65,7 +63,7 @@ class SchedulerClient(SchedulerClientInterface):
             )
 
         response = self._session.post(
-            f"/schedulers/{queue_id}/pop",
+            f"/schedulers/boefje/pop",
             content=QueuePopRequest(filters=filters).model_dump_json(),
             params={"limit": 1},
         )

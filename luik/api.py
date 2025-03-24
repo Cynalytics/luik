@@ -27,30 +27,27 @@ logger = structlog.get_logger(__name__)
 router = APIRouter(dependencies=[Depends(authenticate_token)])
 
 
-@router.post("/pop/{queue_id}", response_model=LuikPopResponse)
+@router.post("/pop", response_model=LuikPopResponse)
 def pop_task(
-    queue_id: str,
     request: LuikPopRequest,
     scheduler_client: SchedulerClientInterface = Depends(get_scheduler_client),
     katalogus_client: KatalogusClientInterface = Depends(get_katalogus_client),
 ) -> LuikPopResponse | Response:
-    logger.info("Popping task for queue: %s", queue_id)
-    logger.info("With request:\n%s", request.model_dump_json())
+    logger.info("Popping task with request:", request=request.model_dump_json())
     task = scheduler_client.pop_task(
-        queue_id, request.task_capabilities, request.reachable_networks
+        request.task_capabilities, request.reachable_networks
     )
     if task is None:
-        logger.info("No task found for queue %s.", queue_id)
+        logger.info("No task found")
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     logger.info("Task:\n%s", task.model_dump_json())
 
     plugin = katalogus_client.get_boefje_plugin(task.data.boefje["id"])
     if plugin is None:
-        logger.critical("Task found, but boefje does not exist for task. %s.", queue_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Task found, but boefje does not exist for task. {queue_id}.",
+            detail=f"Task found, but boefje does not exist for task.",
         )
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 
