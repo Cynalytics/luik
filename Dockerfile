@@ -7,6 +7,5 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-RUN cat requirements.txt
 # Creating folders, and files for a project:
 COPY . .

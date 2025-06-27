@@ -63,7 +63,7 @@ class SchedulerClient(SchedulerClientInterface):
             )
 
         response = self._session.post(
-            f"/schedulers/boefje/pop",
+            "/schedulers/boefje/pop",
             content=QueuePopRequest(filters=filters).model_dump_json(),
             params={"limit": 1},
         )
@@ -76,7 +76,7 @@ class SchedulerClient(SchedulerClientInterface):
 
         dict_response = response.json()
 
-        if dict_response["count"] == 0:
+        if len(dict_response["results"]) == 0:
             return None
 
         return TypeAdapter(Task | None).validate_python(dict_response["results"][0])
