@@ -1,6 +1,5 @@
 services:
   luik:
-    command: python -m luik
     env_file:
       - .env
     build:
