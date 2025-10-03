@@ -21,7 +21,10 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/${{ github.repository }}/luik:latest
+      run: |
+        IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}/luik:latest"
+        docker build . --file Dockerfile --tag $IMAGE
+        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
     - name: Push the Docker image
-      run: docker push ghcr.io/${{ github.repository }}/luik:latest
+      run: docker push ${{ env.IMAGE }}
