@@ -1,5 +1,6 @@
 services:
   luik:
+    image: luik:latest
     env_file:
       - .env
     build:
