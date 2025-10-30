@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 import structlog
 
 from luik.auth import authenticate_token
@@ -89,6 +89,9 @@ def boefje_output(
         get_boefje_runner_client
     ),
 ) -> Any:
+    logger.info(
+        "Received boefje output", task_id=task_id, boefje_output=str(boefje_output)
+    )
     try:
         boefje_runner_client.boefje_output(task_id, boefje_output)
     except HTTPException as e:
@@ -99,3 +102,14 @@ def boefje_output(
         )
 
     return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post("/scheduler/pop", tags=["scheduler"])
+def pop_tasks(
+    limit: int = 1,
+    filters: dict[str, Any] | None = Body(...),
+    boefje_runner_client: BoefjeRunnerClientInterface = Depends(
+        get_boefje_runner_client
+    ),
+) -> dict[str, Any]:
+    return boefje_runner_client.pop_items(filters, limit)

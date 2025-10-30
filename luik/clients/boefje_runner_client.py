@@ -19,6 +19,13 @@ class BoefjeRunnerClientInterface:
     ) -> None:
         raise NotImplementedError()
 
+    def pop_items(
+        self,
+        filters: dict[str, list[dict[str, Any]]] | None = None,
+        limit: int = 1,
+    ) -> dict[str, Any]:
+        raise NotImplementedError()
+
 
 class BoefjeRunnerClient(BoefjeRunnerClientInterface):
     def __init__(self, base_url: str):
@@ -38,9 +45,28 @@ class BoefjeRunnerClient(BoefjeRunnerClientInterface):
         response = self._session.post(
             f"/api/v0/tasks/{task_id}", json=boefje_output.model_dump()
         )
+
         if response.is_error:
-            logger.error(response.text)
+            logger.error("Boefje output response", response=response.text)
         response.raise_for_status()
+
+    def pop_items(
+        self,
+        filters: dict[str, list[dict[str, Any]]] | None = None,
+        limit: int = 1,
+    ) -> dict[str, Any]:
+        response = self._session.post(
+            "/api/v0/scheduler/boefje/pop",
+            json={"filters": filters},
+            params={"limit": limit},
+        )
+
+        logger.info(
+            "Pop items response", status=response.status_code, content=response.text
+        )
+        response.raise_for_status()
+
+        return dict(response.json())
 
 
 def get_boefje_runner_client() -> BoefjeRunnerClientInterface:
