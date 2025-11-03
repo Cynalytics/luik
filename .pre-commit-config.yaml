@@ -12,7 +12,7 @@ repos:
         name: "Update requirements.txt"
         description: "Generate requirements.txt based on poetry.lock"
         entry: poetry
-        args: [export, --output, requirements.txt]
+        args: [export, --output, requirements.txt, --without-hashes]
         language: system
         pass_filenames: false
 
@@ -20,7 +20,15 @@ repos:
         name: "Update requirements-dev.txt"
         description: "Generate requirements-dev.txt based on poetry.lock"
         entry: poetry
-        args: [export, --with, dev, --output, requirements-dev.txt]
+        args:
+          [
+            export,
+            --with,
+            dev,
+            --output,
+            requirements-dev.txt,
+            --without-hashes,
+          ]
         language: system
         pass_filenames: false
 
@@ -46,11 +54,6 @@ repos:
     hooks:
       - id: validate-pyproject
         files: pyproject.toml$
-
-  - repo: https://github.com/MarketSquare/robotframework-tidy
-    rev: "4.18.0"
-    hooks:
-      - id: robotidy
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.14.2"
