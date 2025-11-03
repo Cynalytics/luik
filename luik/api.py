@@ -47,7 +47,7 @@ def pop_task(
     if plugin is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Task found, but boefje does not exist for task.",
+            detail="Task found, but boefje does not exist for task.",
         )
     return LuikPopResponse(task_id=task.id, oci_image=plugin.oci_image)
 

@@ -18,9 +18,7 @@
       "input_ooi": "IPAddressV4|internet|46.23.85.171",
       "dispatches": [],
       "organization": "cyn",
-      "requirements": [
-        "ipv4"
-      ],
+      "requirements": ["ipv4"],
       "environment": {}
     },
     "created_at": "2024-11-20T11:18:11.659961Z",
@@ -43,9 +41,7 @@
       "input_ooi": "IPAddressV4|internet|46.23.85.171",
       "dispatches": [],
       "organization": "cyn",
-      "requirements": [
-        "ipv4"
-      ]
+      "requirements": ["ipv4"]
     },
     "created_at": "2024-09-16T10:44:08.657541Z",
     "modified_at": "2024-09-16T10:44:08.657548Z"

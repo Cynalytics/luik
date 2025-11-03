@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 from fastapi.testclient import TestClient
 import pytest
 
@@ -90,5 +89,5 @@ def authenticated_api(
 
     client = TestClient(app)
     client.headers.update({"luik-api-key": UNHASHED_PASSWORD})
-    
+
     return client

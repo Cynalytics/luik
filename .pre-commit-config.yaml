@@ -73,11 +73,14 @@ repos:
           - types-cachetools
           - types-retry
           - pydantic
+          - pydantic-settings
           - pynacl
           - httpx
           - types-python-dateutil
           - types-requests
           - types-croniter
+          - pytest
+          - fastapi
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1

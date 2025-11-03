@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from pydantic import AnyHttpUrl, Field, PostgresDsn
@@ -6,6 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import structlog
 
 BASE_DIR: Path = Path(__file__).parent.resolve()
+
 
 class Settings(BaseSettings):
     katalogus_db_uri: PostgresDsn = Field(

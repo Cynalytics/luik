@@ -1,5 +1,6 @@
 [![Run Pytest for Luik](https://github.com/Cynalytics/luik/actions/workflows/run-pytest.yml/badge.svg)](https://github.com/Cynalytics/luik/actions/workflows/run-pytest.yml)
 [![Docker Image CI](https://github.com/Cynalytics/luik/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Cynalytics/luik/actions/workflows/docker-image.yml)
+
 # Luik
 
 Interface for kittens to communicate with an OpenKAT instance from a single api

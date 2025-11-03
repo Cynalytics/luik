@@ -42,7 +42,6 @@ class MockSchedulerClient(SchedulerClientInterface):
 class SimpleMockSchedulerClient(SchedulerClientInterface):
     def pop_task(
         self,
-        queue_id: str,
         task_capabilities: list[str] = [],
         reachable_networks: list[str] = [],
     ) -> Task:
