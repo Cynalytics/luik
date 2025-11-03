@@ -8,6 +8,6 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Creating folders, and files for a project:
-COPY . .
+COPY ./luik ./luik
 
 CMD ["python", "-m", "luik"]
