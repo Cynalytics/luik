@@ -1,11 +1,26 @@
 import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from pydantic import AwareDatetime, BaseModel
 
+T = TypeVar("T")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    count: int
+    next: str | None
+    previous: str | None
+    results: list[T]
+
 
 class LuikPopRequest(BaseModel):
+    """ "
+    Request model for popping tasks with luikje.
+        task_capabilities: list of OOIs that the kitten can handle. (This is also limited by the implemented ways of recognizing the network from input_ooi)
+        reachable_networks: list of networks that the kitten can reach.
+    """
+
     task_capabilities: list[str]
     reachable_networks: list[str]
 
@@ -105,7 +120,7 @@ class Task(BaseModel):
 
 class Filter(BaseModel):
     column: str
-    field: str
+    field: str | None = None
     operator: str
     value: Any
 

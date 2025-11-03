@@ -1,13 +1,20 @@
-import json
-
 import structlog
 from httpx import Client, HTTPTransport
 from pydantic import TypeAdapter
 
-from luik.models.api_models import Filter, Queue, QueuePopRequest, Task, TaskStatus
+from luik.models.api_models import (
+    Filter,
+    PaginatedResponse,
+    Queue,
+    QueuePopRequest,
+    Task,
+    TaskStatus,
+)
 from luik.config import settings
 
 logger = structlog.get_logger(__name__)
+
+IMPLEMENTED_OOIS = {"IPAddressV4", "IPAddressV6"}
 
 
 class SchedulerClientInterface:
@@ -37,38 +44,53 @@ class SchedulerClient(SchedulerClientInterface):
         task_capabilities: list[str] = [],
         reachable_networks: list[str] = [],
     ) -> Task | None:
-        filters: list[Filter] = []
+        accepted_oois = IMPLEMENTED_OOIS.intersection(set(task_capabilities))
 
-        # Client should only pop tasks that lie on a network that the runner is capable of reaching (e.g. the internet)
-        if reachable_networks:
-            filters.append(
-                Filter(
-                    column="data",
-                    field="network",
-                    operator="<@",
-                    value=json.dumps(reachable_networks),
-                )
-            )
+        response = self._session.get(
+            "/tasks", params={"limit": "100", "task_type": "boefje", "status": "queued"}
+        )
 
-        # Client should only pop tasks that have requirements that this runner is capable of (e.g. being able
-        # to handle ipv6 requests)
-        if task_capabilities:
-            filters.append(
-                Filter(
-                    column="data",
-                    field="requirements",
-                    operator="<@",
-                    value=json.dumps(task_capabilities),
-                )
+        if response.is_error:
+            logger.error(
+                "Error fetching queued tasks",
+                status_code=response.status_code,
+                text=response.text,
             )
+            return None
+
+        queued_tasks: PaginatedResponse[Task] = TypeAdapter(
+            PaginatedResponse[Task]
+        ).validate_json(response.content)
+
+        logger.info("Queued tasks fetched", tasks=queued_tasks.model_dump_json())
+
+        if queued_tasks.count == 0:
+            logger.debug("No queued tasks available")
+            return None
+
+        found_task = None
+        for task in queued_tasks.results:
+            logger.info("Evaluating task", task_id=task.id)
+
+            if (
+                task.data.input_ooi.split("|")[0] in accepted_oois
+                and task.data.input_ooi.split("|")[1] in reachable_networks
+            ):
+                logger.info("Task matched", task_id=task.id)
+                found_task = task
+                break
+
+        if found_task is None:
+            logger.info("No matching task found")
+            return None
 
         response = self._session.post(
             "/schedulers/boefje/pop",
-            content=QueuePopRequest(filters=filters).model_dump_json(),
+            content=QueuePopRequest(
+                filters=[Filter(column="id", operator="==", value=found_task.id)]
+            ).model_dump_json(),
             params={"limit": 1},
         )
-
-        # TODO: Currently openkat returns an error (404) when no task is found. This needs better handling
 
         logger.info("Content of pop_task:\n%s", response.text)
         if response.is_error:

@@ -1,9 +1,9 @@
-FROM python:3.10
+FROM python:3.12
 
 WORKDIR /app
 
 # System deps:
-COPY requirements.txt ./
+COPY ./requirements.txt ./requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
