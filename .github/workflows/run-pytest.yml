@@ -23,14 +23,6 @@ jobs:
           poetry install --with dev
 
       - name: Run tests
-        env:
-          OCTOPOES_API: http://localhost:8001
-          KATALOGUS_API: http://localhost:8003
-          SCHEDULER_API: http://localhost:8004
-          BOEFJE_RUNNER_API: http://localhost:8005
-          KATALOGUS_DB_URI: postgresql://test:test@localhost:5432/katalogus
-          API: http://localhost:8019
-          LUIK_OUTPUT_URL: http://localhost:8019
         run: poetry run pytest
 
 permissions:
