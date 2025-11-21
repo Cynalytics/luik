@@ -26,11 +26,6 @@ class Settings(BaseSettings):
 
     api: AnyHttpUrl = Field(AnyHttpUrl("http://localhost:8019"))
 
-    token_secret: str = Field(
-        examples=["2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b"],
-        description="Secret for token generation",
-    )
-
     luik_output_url: AnyHttpUrl = Field(
         examples=["http://luik.cynalytics.nl:8019"],
         description="Luik API URL the boefje spawned from another kitten can reach",

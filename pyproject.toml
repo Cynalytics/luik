@@ -34,7 +34,8 @@ env = [
     "SCHEDULER_API = http://a:1",
     "BOEFJE_RUNNER_API = http://a:1",
     "KATALOGUS_DB_URI = postgresql://a:1@b",
-    "TOKEN_SECRET = 10a6e6cc8311a3e2bcc09bf6c199adecd5dd59408c343e926b129c4914f3cb01"
+    "API = http://localhost:8019",
+    "LUIK_OUTPUT_URL = http://localhost:8019"
 ]
 
 [tool.ruff.lint.isort]
