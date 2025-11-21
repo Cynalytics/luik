@@ -31,6 +31,11 @@ class Settings(BaseSettings):
         description="Secret for token generation",
     )
 
+    luik_output_url: AnyHttpUrl = Field(
+        examples=["http://luik.cynalytics.nl:8019"],
+        description="Luik API URL the boefje spawned from another kitten can reach",
+    )
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property

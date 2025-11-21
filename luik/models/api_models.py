@@ -77,10 +77,9 @@ class BoefjeMeta(BaseModel):
     environment: dict[str, Any] = {}
 
 
-class LuikBoefjeInputResponse(BaseModel):
-    task_id: str
+class BoefjeInputResponse(BaseModel):
     output_url: str
-    boefje_meta: BoefjeMeta
+    task: dict[str, Any]
 
 
 class LuikBoefjeOutputRequest(BaseModel):

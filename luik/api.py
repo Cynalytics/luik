@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 import structlog
 
-from luik.auth import authenticate_token
+from luik.config import settings
 from luik.clients.boefje_runner_client import (
     BoefjeRunnerClientInterface,
     get_boefje_runner_client,
@@ -15,6 +15,7 @@ from luik.clients.scheduler_client import (
     get_scheduler_client,
 )
 from luik.models.api_models import (
+    BoefjeInputResponse,
     LuikBoefjeOutputRequest,
     LuikPopRequest,
     LuikPopResponse,
@@ -24,7 +25,7 @@ from luik.models.api_models import (
 
 logger = structlog.get_logger(__name__)
 
-router = APIRouter(dependencies=[Depends(authenticate_token)])
+router = APIRouter()
 
 
 @router.post("/pop", response_model=LuikPopResponse)
@@ -59,7 +60,7 @@ def boefje_input(
     boefje_runner_client: BoefjeRunnerClientInterface = Depends(
         get_boefje_runner_client
     ),
-) -> dict[str, Any]:
+) -> BoefjeInputResponse:
     try:
         scheduler_client.patch_task(str(task_id), TaskStatus.RUNNING)
     except HTTPException as e:
@@ -76,6 +77,10 @@ def boefje_input(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Could not get boefje input from task: {task_id}.",
         )
+
+    prepared_boefje_input.output_url = (
+        f"{str(settings.luik_output_url).rstrip('/')}/boefje/output/{task_id}"
+    )
 
     logger.info("Boefje input:\n%s", prepared_boefje_input)
     return prepared_boefje_input
