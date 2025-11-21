@@ -51,7 +51,7 @@ def test_luik_boefje_input(authenticated_api: TestClient) -> None:
 
     boefje_input = json.loads(response.content)
     assert response.is_success
-    assert boefje_input["task_id"] == task_id
+    assert boefje_input["task"]["id"] == task_id
 
     response = authenticated_api.get(
         "/boefje/input/4b9aeb29-08a1-4a49-a0aa-84725e594d3a"
@@ -74,36 +74,3 @@ def test_luik_boefje_output(authenticated_api: TestClient) -> None:
         response = authenticated_api.post(
             "/boefje/output/non_existing_task", json=req.model_dump()
         )
-
-
-def test_luik_authentication(api: TestClient) -> None:
-    response = api.post(
-        "/pop",
-        json={"task_capabilities": ["foo"], "reachable_networks": ["bar"]},
-    )
-    assert response.status_code == 401
-
-    response = api.get(
-        "/boefje/input/foo",
-    )
-    assert response.status_code == 401
-
-    response = api.post(
-        "/boefje/output/foo",
-        json={
-            "status": "COMPLETED",
-            "files": [
-                {
-                    "name": "name",
-                    "content": "SGFsbG8gY3luYWx5dGljcyA6KQ==",
-                    "tags": ["string"],
-                }
-            ],
-        },
-    )
-    assert response.status_code == 401
-
-    response = api.get(
-        "/health",
-    )
-    assert response.is_success

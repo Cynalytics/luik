@@ -13,6 +13,7 @@ from luik.clients.scheduler_client import (
     get_scheduler_client,
 )
 from luik.clients.octopoes_client import OctopoesClientInterface, get_octopoes_client
+from luik.models.api_models import BoefjeInputResponse
 from tests.mock_clients.mock_boefje_runner_client import MockBoefjeRunnerClient
 from tests.mock_clients.mock_katalogus_client import MockKatalogusClient
 from tests.mock_clients.mock_octopoes_client import MockOctopoesClient
@@ -49,7 +50,7 @@ def mock_octopoes_client() -> OctopoesClientInterface:
 def mock_boefje_runner_client() -> BoefjeRunnerClientInterface:
     with open("./tests/mock_data/mock_boefje_input.json") as f:
         data = f.read()
-    return MockBoefjeRunnerClient(json.loads(data))
+    return MockBoefjeRunnerClient(BoefjeInputResponse.model_validate_json(data))
 
 
 @pytest.fixture

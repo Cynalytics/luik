@@ -1,34 +1,44 @@
 {
-  "task_id": "99b5e767-bdd9-4805-9f66-24ebc4520919",
   "output_url": "NON USED OUTPUT URL",
-  "boefje_meta": {
+  "task": {
     "id": "99b5e767-bdd9-4805-9f66-24ebc4520919",
-    "started_at": null,
-    "ended_at": null,
-    "boefje": {
-      "id": "nmap",
-      "version": null
+    "scheduler_id": "boefje",
+    "schedule_id": "29a1b321-f1a1-41ff-b1a7-8a9971468409",
+    "organisation": "cyn",
+    "priority": 1763650131,
+    "status": "running",
+    "type": "boefje",
+    "hash": "b2125f4cf2df6b51f53fbc2cbecbff97",
+    "data": {
+      "id": "99b5e767-bdd9-4805-9f66-24ebc4520919",
+      "started_at": null,
+      "ended_at": null,
+      "boefje": {
+        "id": "nmap",
+        "version": null,
+        "oci_image": "oci_image"
+      },
+      "input_ooi": "IPAddressV4|internet|1.0.1.0",
+      "arguments": {
+        "oci_image": "oci_image",
+        "oci_arguments": ["--open", "-T4", "-Pn", "-r", "-v10", "-sV", "-sS"],
+        "input": {
+          "object_type": "IPAddressV4",
+          "scan_profile": "scan_profile_type='declared' reference=Reference('IPAddressV4|internet|1.0.1.0') level=<ScanLevel.L2: 2> user_id=1",
+          "user_id": 1,
+          "primary_key": "IPAddressV4|internet|1.0.1.0",
+          "address": "1.0.1.0",
+          "network": {
+            "name": "internet"
+          },
+          "netblock": "None"
+        }
+      },
+      "organization": "cyn",
+      "runnable_hash": "313e66ef0ef25358ea75c4499ea3fac4fecbad65704a9acfd778a16eb5a1fde6",
+      "environment": {}
     },
-    "input_ooi": "IPAddressV4|internet|46.23.85.171",
-    "arguments": {
-      "oci_arguments": ["--open", "-T4", "-Pn", "-r", "-v10", "-sV", "-sS"],
-      "input": {
-        "object_type": "IPAddressV4",
-        "scan_profile": {
-          "scan_profile_type": "declared",
-          "reference": "IPAddressV4|internet|46.23.85.171",
-          "level": 2,
-          "user_id": 1
-        },
-        "user_id": 1,
-        "primary_key": "IPAddressV4|internet|46.23.85.171",
-        "network": "Network|internet",
-        "address": "46.23.85.171",
-        "netblock": null
-      }
-    },
-    "organization": "cyn",
-    "runnable_hash": null,
-    "environment": {}
+    "created_at": "2025-11-20T14:48:51.126892Z",
+    "modified_at": "2025-11-21T13:12:35.635583Z"
   }
 }
