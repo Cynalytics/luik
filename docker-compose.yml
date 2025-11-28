@@ -7,3 +7,5 @@ services:
       context: .
       dockerfile: Dockerfile
     network_mode: host
+    volumes:
+      - ./certs:/app/certs:ro
