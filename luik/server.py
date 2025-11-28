@@ -29,7 +29,13 @@ class UvicornServer(ForkProcess):
 
 
 def run() -> UvicornServer:
-    config = Config(app, host=settings.api_host, port=settings.api_port)
+    config = Config(
+        app,
+        host=settings.api_host,
+        port=settings.api_port,
+        ssl_keyfile=str(settings.ssl_key_file),
+        ssl_certfile=str(settings.ssl_cert_file),
+    )
     instance = UvicornServer(config=config)
     instance.start()
     return instance

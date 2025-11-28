@@ -31,6 +31,15 @@ class Settings(BaseSettings):
         description="Luik API URL the boefje spawned from another kitten can reach",
     )
 
+    ssl_cert_file: Path = Field(
+        default=BASE_DIR.parent / "certs" / "cert.pem",
+        description="SSL certificate file path",
+    )
+    ssl_key_file: Path = Field(
+        default=BASE_DIR.parent / "certs" / "key.pem",
+        description="SSL private key file path",
+    )
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property
