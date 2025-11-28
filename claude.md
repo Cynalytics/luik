@@ -7,11 +7,20 @@
 ### Structure
 
 - Short, descriptive title (imperative mood)
-- Blank line
-- Bullet points explaining specific changes
+- Keep commit focused on a single feature/change
+- If a commit only implements one feature, the title alone is sufficient - don't add extra bullet points
+- For multi-part changes, add a blank line followed by bullet points explaining specific changes
 - Focus on what and why, not how
 
-### Example
+### Examples
+
+Single feature (title only):
+
+```
+Add SSL/TLS support for API server
+```
+
+Multiple related changes (with bullets):
 
 ```
 Remove TOKEN_SECRET configuration and update environment variables
